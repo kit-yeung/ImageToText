@@ -1,6 +1,6 @@
 # ImageToText
 
-## DrTL Team
+## DocReadTransLate
 - [kit-yeung](https://github.com/kit-yeung) - Team Lead<br/>
 - [WenAlgo](https://github.com/WenAlgo) - <br/>
 - [TAHSIN78425](https://github.com/TAHSIN78425) - <br/>
