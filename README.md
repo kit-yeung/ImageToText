@@ -1,6 +1,7 @@
 # ImageToText
+Text Extraction and Translation with Deep Learning
 
-## DocReadTransLate
+## DeepReadTransLate Team
 - [kit-yeung](https://github.com/kit-yeung) - Project Manager<br/>
 - [WenAlgo](https://github.com/WenAlgo) - Developer<br/>
 - [TAHSIN78425](https://github.com/TAHSIN78425) - Designer<br/>
