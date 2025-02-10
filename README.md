@@ -15,3 +15,5 @@ ImageToText is a web application which extracts text or handwriting in a languag
 - Python Libraries - TensorFlow <br/>
 - Frontend - React<br/>
 - Backend - Flask
+#Repository Structure
+<img src="https://github.com/TAHSIN78425/Repository-Structure/blob/main/Respository%20structure%20.png">
