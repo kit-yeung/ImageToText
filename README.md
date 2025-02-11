@@ -11,6 +11,11 @@ ImageToText is a web application which extracts text or handwriting in a languag
 
 <img src="https://github.com/kit-yeung/ImageToText/blob/main/img/flowchart.png">
 
+## Similar Applications
+- [Google Translate](https://translate.google.com)
+- [Yandex Translate](https://translate.yandex.com)
+- [DeepL Translator](https://www.deepl.com/en/translator)
+
 ## Technologies
 - Python Libraries - TensorFlow <br/>
 - Frontend - React<br/>
