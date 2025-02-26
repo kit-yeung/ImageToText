@@ -1,4 +1,4 @@
-# Research Paper Analysis
+# Research Paper Review
 
 ## [Advancements and Challenges in Handwritten Text Recognition: A Comprehensive Survey](https://www.mdpi.com/2313-433X/10/1/18)
 - **Problem Statement**: Overview of existing handwritten text recognition models
