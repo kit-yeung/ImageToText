@@ -1,7 +1,7 @@
 # Research Paper Review
 
 ## [Advancements and Challenges in Handwritten Text Recognition: A Comprehensive Survey](https://www.mdpi.com/2313-433X/10/1/18)
-Wissam AlKendi, Franck Gechter, Laurent Heyberger and Christophe Guyeux
+Wissam AlKendi, Franck Gechter, Laurent Heyberger and Christophe Guyeux (2024)
 - **Problem Statement**: Overview of existing handwritten text recognition models
 - **Dataset**: RIMES dataset containing French handwriting images of ICDAR (International Conference on Document Analysis and Recognition)
 - **Methodologies**: Models including Convolutional Neural Network, Convolutional Recurrent Neural Network, sequence-to-sequence Transformer, Bidirectional Long Short-Term Memory
@@ -16,7 +16,7 @@ Wissam AlKendi, Franck Gechter, Laurent Heyberger and Christophe Guyeux
   - Post-processing: enhance overall accuracy (dictionary lookup)
 
 ## [Deep Learning in Text Recognition and Text Detection: A Review](https://www.irjet.net/archives/V9/i8/IRJET-V9I802.pdf)
-Brindha Muthusamy, Kousalya K
+Brindha Muthusamy, Kousalya K (2022)
 - **Problem Statement**: Addresses the challenges of detecting and recognizing text in natural images with deep learning algorithms
 - **Dataset**:
   - IAM database for feature extraction from raw images
@@ -31,7 +31,7 @@ Brindha Muthusamy, Kousalya K
   - Normalization protects the data and makes the database more flexible by eliminating redundancy and inconsistent dependency
 
 ## [Advancements and Trends in CNN-Based Handwritten Text Recognition: A Comprehensive Survey](https://www.ijarsct.co.in/Paper17573.pdf)
-More Meghana Laxman and Prof. S. G. Joshi
+More Meghana Laxman and Prof. S. G. Joshi (2024)
 - **Problem Statement**: Overview of the advancements and challenges in text recognition systems.
 - **Dataset**: Uses multiple OCR datasets, including scanned text images and multilingual samples.
 - **Methodologies**: Techniques include Convolutional Neural Networks (CNNs), Recurrent Neural Networks (RNNs), and hybrid deep learning models.
