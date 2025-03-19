@@ -8,7 +8,7 @@
 - **Significance:**
   - Automate document processing and translation
   - Enhance global communication
-- Scope:
+- **Scope:**
   - Developing deep learning text extraction and translation models
   - Evaluate the performance of the system
   - Fine tuning the models to improve accuracy and efficiency
