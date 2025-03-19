@@ -23,7 +23,3 @@ Our project will focus on applying deep learning technique to perform text extra
 - Python Libraries - TensorFlow <br/>
 - Frontend - React<br/>
 - Backend - Flask
-
-  
-## Repository Structure
-<img src="https://github.com/TAHSIN78425/Repository-Structure/blob/main/Respository%20structure%20.png">
