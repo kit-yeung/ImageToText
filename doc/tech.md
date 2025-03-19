@@ -15,6 +15,8 @@
 - **Limitations:** Extract and translate text only, excluding other visual contents such as tables and bullet points
 - **Assumptions:** Large datasets are available for training and testing the models accurately
 
+---
+
 # Project Subtasks
 
 ## 1. Text Extraction from Image
@@ -57,6 +59,13 @@
 - **References**:  
   - Tesseract GitHub repository: [https://github.com/tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)  
 
+## 2. SimpleHTR
+- **Strengths/Effectiveness**: Lightweight handwriting recognition system that uses simple neural network architecture
+- **Weaknesses/Limitations**: May not perform well with complex layouts or printed text
+- **Applicability**: Suitable for handwriting recognition applications
+- **Enhancements/Alternatives**: Combine with other OCR models or use more advanced handwriting recognition techniques
+- **References**: https://github.com/githubharald/SimpleHTR
+
 ---
 
 # Evaluation of Existing Solutions for Text Translation Subtask
@@ -81,3 +90,12 @@
 
 - **References**:  
   - Google Translate API documentation: [https://cloud.google.com/translate](https://cloud.google.com/translate)  
+
+## 2. SentencePiece
+- **Strengths/Effectiveness**:
+  - Support a wide range of languages
+  - Optimized for performance with the capability of processing large volumes of text quickly
+- **Weaknesses/Limitations**: Quality of subword segmentation can affect translation accuracy
+- **Applicability**: Suitable for real-time translation applications
+- **Enhancements/Alternatives**: Combine with other machine translation models
+- **References**: https://github.com/google/sentencepiece
