@@ -1,25 +1,6 @@
-# Problem Definition and Scope
-- **Problem:**
-  - Challenge of extracting text precisely from images especially when handwritten mathematical symbols are included
-  - Difficulty of translating the text that involves jargon and slang into different languages
-- **Application Domain:**
-  - Typed and handwritten document scanning and translation
-  - Accessibility tools for visually impaired individuals with language barriers
-- **Significance:**
-  - Automate document processing and translation
-  - Enhance global communication
-- **Scope:**
-  - Developing deep learning text extraction and translation models
-  - Evaluate the performance of the system
-  - Fine tuning the models to improve accuracy and efficiency
-- **Limitations:** Extract and translate text only, excluding other visual contents such as tables and bullet points
-- **Assumptions:** Large datasets are available for training and testing the models accurately
-
----
-
 # Project Subtasks
 
-## 1. Text Extraction from Image
+## 1. Image Text Extraction
 - **Description**:  
   This subtask involves extracting textual content from images using Optical Character Recognition (OCR) or similar technologies. The goal is to accurately identify and retrieve text embedded in images, regardless of font, size, or background complexity.
   
@@ -35,7 +16,7 @@
 
 ---
 
-# Evaluation of Existing Solutions for Text Extraction from Image Subtask
+# Evaluation of Existing Solutions for Image Text Extraction Subtask
 
 ## 1. Tesseract OCR
 - **Strengths/Effectiveness**:  
@@ -59,12 +40,12 @@
 - **References**:  
   - Tesseract GitHub repository: [https://github.com/tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract)  
 
-## 2. SimpleHTR
-- **Strengths/Effectiveness**: Lightweight handwriting recognition system that uses simple neural network architecture
-- **Weaknesses/Limitations**: May not perform well with complex layouts or printed text
-- **Applicability**: Suitable for handwriting recognition applications
-- **Enhancements/Alternatives**: Combine with other OCR models or use more advanced handwriting recognition techniques
-- **References**: https://github.com/githubharald/SimpleHTR
+## 2. Google Cloud Vision API
+- **Strengths/Effectiveness**: High Accuracy, support for multiple languages, scalability
+- **Weaknesses/Limitations**: Free for limited usage (first 1000 units/month)
+- **Applicability**: Suitable for document scanning and image search
+- **Enhancements/Alternatives**: Use open-source deep learning libraries (e.g. TensorFlow) to build own model
+- **References**: [https://cloud.google.com/vision/docs](https://cloud.google.com/vision/docs)
 
 ---
 
