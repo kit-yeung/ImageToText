@@ -45,7 +45,7 @@
 - **Weaknesses/Limitations**: Free for limited usage (first 1000 units/month)
 - **Applicability**: Suitable for document scanning and image search
 - **Enhancements/Alternatives**: Use open-source deep learning libraries (e.g. TensorFlow) to build own model
-- **References**: [https://cloud.google.com/vision/docs](https://cloud.google.com/vision/docs)
+- **References**: https://cloud.google.com/vision/docs
 
 ---
 
