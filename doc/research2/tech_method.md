@@ -1,21 +1,3 @@
-# Project Subtasks
-
-## 1. Image Text Extraction
-- **Description**:  
-  This subtask involves extracting textual content from images using Optical Character Recognition (OCR) or similar technologies. The goal is to accurately identify and retrieve text embedded in images, regardless of font, size, or background complexity.
-  
-- **Relevance**:  
-  Text extraction from images is critical for applications like document digitization, license plate recognition, and assistive technologies for the visually impaired. It serves as the foundation for further processing, such as translation or analysis.
-
-## 2. Text Translation
-- **Description**:  
-  This subtask focuses on translating extracted text from one language to another. It involves natural language processing (NLP) techniques to ensure accurate and contextually appropriate translations.
-  
-- **Relevance**:  
-  Text translation is essential for breaking language barriers in global communication, enabling cross-lingual information retrieval, and supporting multilingual applications like customer support and content localization.
-
----
-
 # Evaluation of Existing Solutions for Image Text Extraction Subtask
 
 ## 1. Tesseract OCR
