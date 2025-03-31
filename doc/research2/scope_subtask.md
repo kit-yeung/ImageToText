@@ -19,7 +19,7 @@
 
 # Project Subtasks
 
-## 1. Text Extraction from Image
+## 1. Image Text Extraction
 - **Description**:  
   This subtask involves extracting textual content from images using Optical Character Recognition (OCR) or similar technologies. The goal is to accurately identify and retrieve text embedded in images, regardless of font, size, or background complexity.
   
