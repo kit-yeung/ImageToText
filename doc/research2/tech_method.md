@@ -33,7 +33,7 @@
 
 # Evaluation of Existing Solutions for Text Translation Subtask
 
-## 1. Google Translate API
+## 1. DeepL API
 - **Strengths/Effectiveness**:  
   - Supports over 100 languages.  
   - High translation accuracy for common languages.  
