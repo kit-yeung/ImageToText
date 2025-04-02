@@ -25,7 +25,7 @@ Our project will focus on applying deep learning technique to perform text extra
 
 ## Technologies
 - Python Libraries - TensorFlow <br/>
-- Frontend - React<br/>
+- Frontend - React,Tesseract<br/>
 - Backend - Flask
 
 ## Methodologies
