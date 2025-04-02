@@ -35,7 +35,7 @@
 
 ## 1. DeepL API
 - **Strengths/Effectiveness**:  
-  - Supports over 100 languages.  
+  - Supports over 30 languages.  
   - High translation accuracy for common languages.  
   - Easy to integrate with applications.  
 
