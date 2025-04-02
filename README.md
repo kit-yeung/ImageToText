@@ -39,9 +39,9 @@ Our project will focus on applying deep learning technique to perform text extra
 -- recognizes text and extracts information from images using machine learning
 -- provides powerful OCR capabilities including text detection and recognition
   
--Tesseract OCR:
---Open-source and widely used for text recognition in images. It supports multiple languages.
---It can be integrated into Python with libraries like pytesseract
+- Tesseract OCR:
+-- Open-source and widely used for text recognition in images. It supports multiple languages.
+-- It can be integrated into Python with libraries like pytesseract
 
 - Google Cloud Translation API:
 -- Translates text from one language to another.
