@@ -1,6 +1,6 @@
 # Paper Reproduction
 
-## Digital Peter: New Dataset, Competition and Handwriting Recognition Methods
+## Digital Peter: New Dataset, Competition and Handwriting Recognition Methods (2021)
 - **Authors**: Mark Potanin, Denis Dimitrov, Vladimir Bataev, Alex Shonenkov, Denis Karachev, Maxim Novopoltsev, and Andrey Chertok
 - **Paper**: https://arxiv.org/pdf/2103.09354v2
 - **Repository**: https://github.com/MarkPotanin/DigitalPeter
