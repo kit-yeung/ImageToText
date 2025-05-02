@@ -62,3 +62,11 @@
 - **Applicability**: Suitable for real-time translation applications
 - **Enhancements/Alternatives**: Combine with other machine translation models
 - **References**: https://github.com/google/sentencepiece
+
+## 3. Neural Machine Translation (NMT)
+- **Strengths/Effectiveness**:
+  - Use an artificial neural network to predict the likelihood of a sequence of words
+  - Model entire sentences in a single integrated model
+- **Weaknesses/Limitations**:
+  - Tend to produce fairly literal translations
+  - Struggle with technical terms when there is limited high-quality data available for certain languages
