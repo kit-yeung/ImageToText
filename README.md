@@ -19,32 +19,7 @@ These are some of the existing websites that offer similar functionalities:
 
 Our project will focus on applying deep learning technique to perform text extraction from image and translation effectively.
 
-# Subtasks
-- Text Extraction
-- Text Translation
-
 ## Technologies
-- Python Libraries - TensorFlow <br/>
-- Frontend - React,Tesseract<br/>
+- Python Libraries - PyTorch, NumPy<br/>
+- Frontend - React<br/>
 - Backend - Flask
-
-## Methodologies
-- Neural Machine Translation (NMT):
--- uses an artificial neural network to predict the likelihood of a sequence of words
--- models entire sentences in a single integrated model
-(Limitation: NMT tends to produce fairly literal translations and sometimes struggles with technical terms when there is limited high-quality data available for certain languages.)
-
-## Tools/Frameworks
-- Google Cloud Vision API:
- -- recognizes text and extracts information from images using machine learning
- -- provides powerful OCR capabilities including text detection and recognition
-  
-- Tesseract OCR:
- -- Open-source and widely used for text recognition in images. It supports multiple languages
- -- It can be integrated into Python with libraries like pytesseract
-
-- Google Cloud Translation API:
- -- Translates text from one language to another.
-- DeepL Translator API
-  --  DeepL's API utilizes proprietary neural machine translation technology
-  -- The API supports translations between multiple languages
