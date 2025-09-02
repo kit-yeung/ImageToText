@@ -4,9 +4,11 @@ import './App.css';
 function App() {
 	const [image, setImage] = useState(null);
 	const [text, setText] = useState('');
+	const [model, setModel] = useState('');
 	const [language, setLanguage] = useState('');
 	const [translation, setTranslation] = useState(null);
 	const [loading, setLoading] = useState(false);
+	const [uploaded, setUploaded] = useState(false);
 	const [error, setError] = useState(null);
 	const languages = ['English', 'Japanese'];
 	
@@ -26,6 +28,8 @@ function App() {
 				const data = await response.json();
 				if (data.extracted_text) {
 					setText(data.extracted_text);
+					setModel(data.source);
+					setUploaded(true);
 				}
 				else {
 					setError('No text extracted');
@@ -49,24 +53,39 @@ function App() {
 			return;
 		}
 		try {
-			const response = await fetch('http://localhost:5000/translate', {
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({
-					text: text,
-					language: language
-				}),
-			});
-			const data = await response.json();
-			if (!response.ok) {
-				throw new Error(data.error || 'Translation failed');
+			// Split long text into parts
+			const parts = splitText(text);
+			let translations = [];
+			for (let i = 0; i < parts.length; i++) {
+				const response = await fetch('http://localhost:5000/translate', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({
+						text: parts[i],
+						language: language
+					}),
+				});
+				const data = await response.json();
+				if (!response.ok) {
+					throw new Error(data.error || 'Translation failed');
+				}
+				translations.push(data.translated_text);
 			}
-			setTranslation({translated_text: data.translated_text});
+			setTranslation({translated_text: translations.join('')});
 		}
 		catch (err) {
 			setError('Error occurred');
 		}
 		setLoading(false);
+	};
+	
+	const splitText = (text) => {
+		const maxLength = 512;
+		const parts = [];
+		for (let i = 0; i < text.length; i += maxLength) {
+			parts.push(text.substring(i, Math.min(i + maxLength, text.length)));
+		}
+		return parts;
 	};
 	
 	return (
@@ -77,6 +96,9 @@ function App() {
 					<h2>Extract Text from Image</h2>
 					<input type='file' accept='image/*' onChange={handleImage} disabled={loading}/>
 					{image && <img src={image} alt='Uploaded Image' />}
+					{uploaded && (
+						<p>{model}</p>
+					)}
 				</div>
 				<div className='translation'>
 					<h2>Translate Text</h2>
