@@ -23,7 +23,7 @@ Our project will focus on applying deep learning techniques to perform text extr
 
 ## Technologies
 - Python Libraries - PyTorch, NumPy
-- Frontend - React
+- Frontend - React JS,Teseract JS
 - Backend - Flask
 - OCR - EasyOCR for extracting text from images
 - Translation - Google Translate API for translating recognized text
