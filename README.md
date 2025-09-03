@@ -16,14 +16,12 @@ These are some of the existing websites that offer similar functionalities:
 - [i2OCR](https://www.i2ocr.com): Convert scanned documents and images into editable text with advanced OCR (Optical Character Recognition) technology.
 - [Prepostseo](https://www.prepostseo.com/image-to-text): Obtain text from low-resolution and blurry photos with high accuracy.
 - [Google Translate](https://translate.google.com): Extract simple text and complex math equations from images for translation.
-- [Yandex Translate](https://translate.yandex.com)
-- [DeepL Translator](https://www.deepl.com/en/translator)
 
 Our project will focus on applying deep learning techniques to perform text extraction from images and translation effectively.
 
 ## Technologies
-- Python Libraries - PyTorch, NumPy
 - Frontend - React JS,Teseract JS
 - Backend - Flask
-- OCR - EasyOCR for extracting text from images
-- Translation - Google Translate API for translating recognized text
+- Deep Learning - PyTorch
+- OCR - EasyOCR (printed), TrOCR (handwritten) 
+- Translation - M2M100
