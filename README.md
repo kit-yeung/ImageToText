@@ -23,5 +23,27 @@ Our project will focus on applying deep learning techniques to perform text extr
 - Frontend - React JS,Teseract JS
 - Backend - Flask
 - Deep Learning - PyTorch
-- OCR - EasyOCR (printed), TrOCR (handwritten) 
+- OCR - EasyOCR (printed), TrOCR (handwritten)
+- Language Detection - pycld2
 - Translation - M2M100
+
+## Setup Instruction
+1. Install project dependencies in backend
+```
+pip install -r requirements.txt
+```
+2. Install React in frontend
+```
+npm install
+```
+
+## Run Project
+1. Run Flask in backend
+```
+python app.py
+```
+2. Run React in frontend
+```
+npm run dev
+```
+3. Browse http://localhost:5173
