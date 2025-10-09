@@ -9,3 +9,7 @@ opencv-python-headless
 easyocr
 sentencepiece
 pycld2
+datasets
+evaluate
+accelerate
+jiwer

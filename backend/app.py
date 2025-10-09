@@ -11,7 +11,7 @@ import pycld2
 app = Flask(__name__)
 CORS(app)
 
-LANGUAGES = ['en', 'ja']
+LANGUAGES = ['en', 'fr']
 reader = easyocr.Reader(LANGUAGES, gpu=torch.cuda.is_available())
 
 # Load TrOCR handwritten model

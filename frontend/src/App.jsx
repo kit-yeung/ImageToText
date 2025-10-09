@@ -15,7 +15,7 @@ function App() {
 
     const languageMap = {
         'en': 'English',
-        'ja': 'Japanese',
+        'fr': 'French',
     };
 
     const handleImage = async (e) => {
