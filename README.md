@@ -47,3 +47,6 @@ python app.py
 npm run dev
 ```
 3. Browse http://localhost:5173
+
+## User Interface (Prototype)
+<img src="https://github.com/kit-yeung/ImageToText/blob/main/img/prototype.png">
