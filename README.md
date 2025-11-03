@@ -22,6 +22,7 @@ Our project will focus on applying deep learning techniques to perform text extr
 ## Technologies
 - Frontend - React JS,Teseract JS
 - Backend - Flask
+- Database - SQLite
 - Deep Learning - PyTorch
 - OCR - EasyOCR (printed), TrOCR (handwritten)
 - Language Detection - pycld2
