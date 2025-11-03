@@ -1,5 +1,7 @@
 flask
 flask-cors
+flask-sqlalchemy
+python-dotenv
 torch
 torchvision
 transformers

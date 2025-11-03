@@ -1,15 +1,38 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel, M2M100ForConditionalGeneration, M2M100Tokenizer
 from PIL import Image
 from collections import defaultdict
 import numpy as np
+import os
 import torch
 import easyocr
 import pycld2
 
+# Load environment variables from .env
+load_dotenv()
+
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
+app.secret_key = os.getenv('SECRET_KEY', 'default-secret-key')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Database table
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(100), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 LANGUAGES = ['en', 'fr']
 reader = easyocr.Reader(LANGUAGES, gpu=torch.cuda.is_available())
@@ -85,7 +108,7 @@ def detect_language(text):
     except:
         return 'en'
 
-@app.route('/extract', methods=['POST'])
+@app.route('/api/extract', methods=['POST'])
 def extract_image_text():
     file = request.files['image']
     text_type = request.form.get('text_type', 'auto')
@@ -123,7 +146,7 @@ def extract_image_text():
         'detected_language': language
     })
 
-@app.route('/translate', methods=['POST'])
+@app.route('/api/translate', methods=['POST'])
 def translate_text():
     data = request.get_json()
     text = data.get('text', '')
@@ -151,6 +174,52 @@ def translate_text():
         'translated_text': translated_text,
         'detected_language': detected_language
     })
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    user = User.query.filter_by(email=email).first()
+    # Log in if email and password match in database
+    if user and user.check_password(password):
+        session['user_id'] = user.id
+        session['email'] = user.email
+        return jsonify({'message': 'Logged in', 'email': user.email})
+    return jsonify({'error': 'Invalid credentials'}), 401
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    # Sign up if email not in database
+    if User.query.filter_by(email=email).first():
+        return jsonify({'error': 'Email already exists'}), 400
+    user = User(email=email)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    session['user_id'] = user.id
+    session['email'] = user.email
+    return jsonify({'message': 'Signed up', 'email': user.email})
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({'message': 'Logged out'})
+
+@app.route('/api/status', methods=['GET'])
+def status():
+    # Return user login status
+    if 'user_id' in session:
+        return jsonify({'logged_in': True, 'email': session['email']})
+    return jsonify({'logged_in': False})
+
+# Initialize database
+@app.before_request
+def create_table():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
