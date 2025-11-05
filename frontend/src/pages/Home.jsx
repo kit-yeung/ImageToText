@@ -6,7 +6,7 @@ function Home() {
 	const navigate = useNavigate();
 	
 	const [loggedIn, setLoggedIn] = useState(false);
-	const [email, setEmail] = useState('');
+	const [name, setName] = useState('');
 	
 	const checkAuth = async () => {
 		const res = await fetch('http://localhost:5000/api/status', {
@@ -15,7 +15,7 @@ function Home() {
 		const data = await res.json();
 		setLoggedIn(data.logged_in);
 		if (data.logged_in)
-			setEmail(data.email);
+			setName(data.name);
 	};
 	
 	const logout = async () => {
@@ -157,7 +157,7 @@ function Home() {
 				<div>
 					{loggedIn ? (
 						<>
-							<span>{email}</span>
+							<span>{name}</span>
 							<button className='button' onClick={logout}>Logout</button>
 						</>
 					) : (

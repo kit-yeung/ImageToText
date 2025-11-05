@@ -24,9 +24,9 @@ db = SQLAlchemy(app)
 
 # Database table
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(50), nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -178,31 +178,29 @@ def translate_text():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    email = data.get('email')
+    name = data.get('name')
     password = data.get('password')
-    user = User.query.filter_by(email=email).first()
-    # Log in if email and password match in database
+    user = db.session.get(User, name)
+    # Log in if name and password match in database
     if user and user.check_password(password):
-        session['user_id'] = user.id
-        session['email'] = user.email
-        return jsonify({'message': 'Logged in', 'email': user.email})
+        session['user_name'] = user.name
+        return jsonify({'message': 'Logged in', 'name': user.name})
     return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
+    name = data.get('name')
     email = data.get('email')
     password = data.get('password')
-    # Sign up if email not in database
-    if User.query.filter_by(email=email).first():
-        return jsonify({'error': 'Email already exists'}), 400
-    user = User(email=email)
+    # Sign up if name not in database
+    if db.session.get(User, name):
+        return jsonify({'error': 'Name already used'}), 400
+    user = User(name=name, email=email)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
-    session['user_id'] = user.id
-    session['email'] = user.email
-    return jsonify({'message': 'Signed up', 'email': user.email})
+    return jsonify({'message': 'Signed up'})
 
 @app.route('/api/logout', methods=['POST'])
 def logout():
@@ -212,8 +210,9 @@ def logout():
 @app.route('/api/status', methods=['GET'])
 def status():
     # Return user login status
-    if 'user_id' in session:
-        return jsonify({'logged_in': True, 'email': session['email']})
+    if 'user_name' in session:
+        user = db.session.get(User, session['user_name'])
+        return jsonify({'logged_in': True, 'name': user.name})
     return jsonify({'logged_in': False})
 
 # Initialize database

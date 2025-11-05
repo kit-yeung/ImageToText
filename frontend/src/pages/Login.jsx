@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
-	const [email, setEmail] = useState('');
+	const [name, setName] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
-	
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError('');
@@ -14,7 +14,7 @@ export default function Login() {
 			method: 'POST',
 			credentials: 'include',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ name, password }),
 		});
 		const data = await res.json();
 		if (res.ok) {
@@ -24,7 +24,7 @@ export default function Login() {
 			setError(data.error || 'Login failed');
 		}
 	};
-	
+
 	return (
 		<div className='container'>
 			<button className='hiddenbutton' onClick={() => navigate('/')}>ImageToText</button>
@@ -33,10 +33,10 @@ export default function Login() {
 				{error && <p className='error'>{error}</p>}
 				<form onSubmit={handleSubmit}>
 					<input
-						type='email'
-						placeholder='Email'
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						type='text'
+						placeholder='Name'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
 						required
 					/>
 					<input
