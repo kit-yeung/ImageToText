@@ -25,7 +25,7 @@ db = SQLAlchemy(app)
 # Database table
 class User(db.Model):
     name = db.Column(db.String(50), primary_key=True)
-    email = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.String(50), nullable=False)
 
     def set_password(self, password):
@@ -221,4 +221,5 @@ def create_table():
     db.create_all()
 
 if __name__ == '__main__':
+
     app.run(debug=True, host='0.0.0.0', port=5000)
