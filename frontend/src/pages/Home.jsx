@@ -41,6 +41,7 @@ function Home() {
 	const [inputLanguage, setInputLanguage] = useState('auto');
 	const [selectedTextType, setSelectedTextType] = useState('auto');
 	const [lineSeparation, setLineSeparation] = useState('auto');
+	const [translationModel, setTranslationModel] = useState('nmt');
 	const [translation, setTranslation] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [uploaded, setUploaded] = useState(false);
@@ -104,8 +105,8 @@ function Home() {
 		try {
 			// Convert selected language to code
 			const languageCode = Object.keys(languageMap).find(key => languageMap[key] === language);
-			// Split long text into parts
-			const parts = splitText(text);
+			// // Split long text into parts for machine translation
+			const parts = translationModel === 'llm' ? [text] : splitText(text);
 			let translations = [];
 			// Translate text
 			for (let i = 0; i < parts.length; i++) {
@@ -116,15 +117,11 @@ function Home() {
 						text: parts[i],
 						language: languageCode,
 						input_language: inputLanguage,
+						method: translationModel
 					}),
 				});
 				const data = await response.json();
 				if (!response.ok) {
-					if (data.error.includes('Unsupported language')) {
-						setError(data.error);
-						setLoading(false);
-						return;
-					}
 					throw new Error(data.error || 'Translation failed');
 				}
 				translations.push(data.translated_text);
@@ -243,6 +240,16 @@ function Home() {
 							{Object.values(languageMap).filter(lang => lang !== 'auto').map((lang) => (
 								<option key={lang} value={lang}>{lang}</option>
 							))}
+						</select>
+						<label htmlFor='modelSelect'>Translation Model</label>
+						<select
+							id='modelSelect'
+							value={translationModel}
+							onChange={(e) => setTranslationModel(e.target.value)}
+							className='select'
+						>
+							<option value='nmt'>NMT</option>
+							<option value='llm'>LLM</option>
 						</select>
 						<button type='submit' className='button' disabled={loading}>Translate</button>
 					</form>
