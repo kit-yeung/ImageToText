@@ -105,7 +105,7 @@ function Home() {
 		try {
 			// Convert selected language to code
 			const languageCode = Object.keys(languageMap).find(key => languageMap[key] === language);
-			// // Split long text into parts for machine translation
+			// Split long text into parts for machine translation
 			const parts = translationModel === 'llm' ? [text] : splitText(text);
 			let translations = [];
 			// Translate text
