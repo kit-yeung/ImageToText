@@ -9,6 +9,7 @@ from utils.image_preprocess import enhance_for_detection
 from corrector.edit_distance import SimpleCandidateGenerator
 from corrector.bert_mlm_corrector import BertMLMCorrector
 from evaluation.metrics import compute_wer, cer
+from translation.translation_model import translate_text
 from config import OCR_DEVICE, CROP_PADDING
 from wordfreq import top_n_list
 
@@ -24,7 +25,7 @@ vocab = top_n_list("en", 50000)
 # Candidate generator
 candidate_gen = SimpleCandidateGenerator(vocab)
 
-@app.route('/api/ocr', methods=['POST'])
+@app.route('/api/extract', methods=['POST'])
 def api_ocr():
     try:
         if 'image' not in request.files:
@@ -88,6 +89,36 @@ def api_ocr():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': 'internal error', 'details': str(e)}), 500
+
+
+@app.route('/api/translation', methods=['POST'])
+def translation_api():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No JSON payload provided"}), 400
+
+    text = data.get("text", "")
+    src_lang = data.get("src_lang", "en")
+    tgt_lang = data.get("tgt_lang", None)  # zh, fr, de, es, it, ru ...
+
+    if not text.strip():
+        return jsonify({"error": "Text cannot be empty"}), 400
+
+    if not tgt_lang:
+        return jsonify({"error": "tgt_lang is required"}), 400
+
+    try:
+        translated = translate_text(text, src_lang, tgt_lang)
+        return jsonify({
+            "input_text": text,
+            "translated_text": translated,
+            "src_lang": src_lang,
+            "tgt_lang": tgt_lang
+        })
+
+    except Exception as e:
+        return jsonify({"error": f"Translation failed: {str(e)}"}), 500
 
 
 if __name__ == '__main__':

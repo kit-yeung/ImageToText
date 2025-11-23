@@ -1,12 +1,14 @@
-# OCR + Spelling Correction
+# ImageToText Translator
 
 This project implements:
 
--   CRAFT text detection (using craft-text-detector)
--   TrOCR recognition (HuggingFace transformers)
--   Edit-distance candidate generation + BERT-MLM scoring for correction
--   WER / CER evaluation (jiwer + editdistance)
--   Flask API for image upload and returning raw & corrected text
+-   Text Detection: Use CRAFT to detect text regions and crop image patches for recognition.
+-   Text Recognition: Apply TrOCR for English printed/handwritten text.
+-   Text Correction: Edit-distance candidate generation with BERT-MLM scoring for correction
+-   Evaluation Metrics: Measure performance using Word Error Rate (WER) and Character Error Rate (CER) with jiwer and editdistance.
+-   Dataset: Bentham Handwritten Dataset for training the TrOCR model on English handwritten text recognition tasks.
+-   Text Translation: Translate extracted text to the user-selected target language using Helsinki-NLP MarianMTModel.
+-   Frameworks: The Web API is built with Flask.
 
 ## Setup Instructions
 
