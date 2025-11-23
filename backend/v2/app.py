@@ -1,6 +1,13 @@
 import io, os, traceback
 from flask import Flask, request, jsonify
 from PIL import Image
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import (
+    JWTManager, create_access_token,
+    jwt_required, get_jwt_identity
+)
+from database import get_db
+import sqlite3
 from ocr.craft_detect import detect_boxes_from_pil
 from ocr.trocr_recognize import TrocrRecognizer
 from ocr.easyocr_fallback import easyocr_detect_and_recognize
@@ -14,6 +21,9 @@ from config import OCR_DEVICE, CROP_PADDING
 from wordfreq import top_n_list
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 # OCR models
 recognizer = TrocrRecognizer()
@@ -24,6 +34,77 @@ vocab = top_n_list("en", 50000)
 
 # Candidate generator
 candidate_gen = SimpleCandidateGenerator(vocab)
+
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not username or not email or not password:
+        return jsonify({"error": "Username, email, and password required"}), 400
+
+    password_hash = bcrypt.generate_password_hash(password).decode()
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+            (username, email, password_hash)
+        )
+        conn.commit()
+
+    except sqlite3.IntegrityError:
+        return jsonify({"error": "Username or email already exists"}), 400
+
+    return jsonify({"message": "Signup successful!"}), 201
+
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username_or_email = data.get("username")
+    password = data.get("password")
+
+    if not username_or_email or not password:
+        return jsonify({"error": "Missing username/email or password"}), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Allow login by username or email
+    cursor.execute("""
+        SELECT id, username, email, password_hash
+        FROM users
+        WHERE username = ? OR email = ?
+    """, (username_or_email, username_or_email))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    if not bcrypt.check_password_hash(user["password_hash"], password):
+        return jsonify({"error": "Incorrect password"}), 401
+
+    token = create_access_token(identity=str(user["id"]))
+
+    return jsonify({
+        "message": "Login successful!",
+        "token": token,
+        "username": user["username"],
+        "email": user["email"]
+    }), 200
+
+
+@app.route('/api/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    return jsonify({"message": "Logout successful! Please delete token on client."}), 200
+
 
 @app.route('/api/extract', methods=['POST'])
 def api_ocr():

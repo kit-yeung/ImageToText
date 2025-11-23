@@ -28,6 +28,13 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+### Database Initialization
+
+```bash
+# Initialize the SQLite database
+python database.py
+```
+
 ### Running the Application
 
 ```bash
@@ -53,15 +60,18 @@ pip install opencv-contrib-python==4.7.0.72
 ## API Endpoints
 
 ### 1. Text Extraction
+
 **Endpoint:** `POST /api/extract`
 
 **Request:**
-- Content-Type: `multipart/form-data`
-- Parameters:
-  - `image` (file, required): Image file containing text
-  - `ground_truth` (text, optional): Ground truth text for evaluation
+
+-   Content-Type: `multipart/form-data`
+-   Parameters:
+    -   `image` (file, required): Image file containing text
+    -   `ground_truth` (text, optional): Ground truth text for evaluation
 
 **Response:**
+
 ```json
 {
     "corrected": "...",
@@ -76,25 +86,152 @@ pip install opencv-contrib-python==4.7.0.72
 ```
 
 ### 2. Text Translation
+
 **Endpoint:** `POST /api/translation`
 
 **Request:**
-- Content-Type: `application/json`
-- Body:
+
+-   Content-Type: `application/json`
+-   Body:
+
 ```json
 {
-  "text": "This is the test text.",
-  "src_lang": "en",
-  "tgt_lang": "zh"
+    "text": "This is the test text.",
+    "src_lang": "en",
+    "tgt_lang": "zh"
 }
 ```
 
 **Response:**
+
 ```json
 {
     "input_text": "This is the test text.",
     "src_lang": "en",
     "tgt_lang": "zh",
     "translated_text": "这是测试文本。"
+}
+```
+
+### 3. User Signup
+
+**Endpoint:** `POST /api/signup`
+
+**Request:**
+
+-   Content-Type: `application/json`
+-   Body:
+
+```json
+{
+    "username": "your_username",
+    "email": "your_email@example.com",
+    "password": "your_password"
+}
+```
+
+**Response:**
+
+-   Success (201):
+
+```json
+{
+    "message": "Signup successful!"
+}
+```
+
+-   Error (400):
+
+```json
+{
+    "error": "Username, email, and password required"
+}
+```
+
+or
+
+```json
+{
+    "error": "Username or email already exists"
+}
+```
+
+### 4. User Login
+
+**Endpoint:** `POST /api/login`
+
+**Request:**
+
+-   Content-Type: `application/json`
+-   Body:
+
+```json
+{
+    "username": "your_username_or_email",
+    "password": "your_password"
+}
+```
+
+**Response:**
+
+-   Success (200):
+
+```json
+{
+    "message": "Login successful!",
+    "token": "...",
+    "username": "your_username_or_email",
+    "email": "your_email@example.com"
+}
+```
+
+-   Error (400):
+
+```json
+{
+    "error": "Missing username/email or password"
+}
+```
+
+-   Error (404):
+
+```json
+{
+    "error": "User not found"
+}
+```
+
+-   Error (401):
+
+```json
+{
+    "error": "Incorrect password"
+}
+```
+
+### 5. User Logout
+
+**Endpoint:** `POST /api/logout`
+
+**Request:**
+
+-   Headers:
+    -   `Authorization: Bearer <your_jwt_token>`
+
+**Response:**
+
+-   Success (200):
+
+```json
+{
+    "message": "Logout successful! Please delete token on client."
+}
+```
+
+-   Error (401):
+
+```json
+{
+    "msg": "Missing Authorization Header"
 }
 ```
