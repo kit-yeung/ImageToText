@@ -49,3 +49,52 @@ This is likely due to conflicting OpenCV versions. Fix it by uninstalling all Op
 pip uninstall -y opencv-python opencv-contrib-python opencv-python-headless
 pip install opencv-contrib-python==4.7.0.72
 ```
+
+## API Endpoints
+
+### 1. Text Extraction
+**Endpoint:** `POST /api/extract`
+
+**Request:**
+- Content-Type: `multipart/form-data`
+- Parameters:
+  - `image` (file, required): Image file containing text
+  - `ground_truth` (text, optional): Ground truth text for evaluation
+
+**Response:**
+```json
+{
+    "corrected": "...",
+    "metrics": {
+        "cer_after": 0.05555555555555555,
+        "cer_before": 0.0,
+        "wer_after": 0.045454545454545456,
+        "wer_before": 0.0
+    },
+    "raw": "..."
+}
+```
+
+### 2. Text Translation
+**Endpoint:** `POST /api/translation`
+
+**Request:**
+- Content-Type: `application/json`
+- Body:
+```json
+{
+  "text": "This is the test text.",
+  "src_lang": "en",
+  "tgt_lang": "zh"
+}
+```
+
+**Response:**
+```json
+{
+    "input_text": "This is the test text.",
+    "src_lang": "en",
+    "tgt_lang": "zh",
+    "translated_text": "这是测试文本。"
+}
+```
