@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Redirect = ({ children }) => {
+const RedirectUser = ({ children }) => {
 	const navigate = useNavigate();
 	
 	useEffect(() => {
@@ -20,4 +20,4 @@ const Redirect = ({ children }) => {
 	return <>{children}</>;
 };
 
-export default Redirect;
+export default RedirectUser;

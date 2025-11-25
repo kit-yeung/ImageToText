@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Home() {
-	// User login
-	const navigate = useNavigate();
-	
+	// For user login
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [name, setName] = useState('');
+	const navigate = useNavigate();
 	
 	const checkAuth = async () => {
 		const res = await fetch('http://localhost:5000/api/status', {
@@ -31,7 +30,7 @@ function Home() {
 		checkAuth();
 	}, []);
 	
-	// Text extraction and translation
+	// For text extraction and translation
 	const [image, setImage] = useState(null);
 	const [text, setText] = useState('');
 	const [textType, setTextType] = useState('');
@@ -46,16 +45,16 @@ function Home() {
 	const [loading, setLoading] = useState(false);
 	const [uploaded, setUploaded] = useState(false);
 	const [error, setError] = useState(null);
-
+	
 	const languageMap = {
 		'auto': 'auto',
 		'en': 'English',
 		'fr': 'French',
 	};
-
+	
 	const textTypeOptions = ['auto', 'printed', 'handwritten'];
 	const lineSeparationOptions = ['auto', 'no'];
-
+	
 	const handleImage = async (e) => {
 		// Get file input
 		const file = e.target.files[0];
@@ -72,6 +71,7 @@ function Home() {
 			try {
 				const response = await fetch('http://localhost:5000/api/extract', {
 					method: 'POST',
+					credentials: 'include',
 					body: formData,
 				});
 				const data = await response.json();
@@ -91,7 +91,7 @@ function Home() {
 			setLoading(false);
 		}
 	};
-
+	
 	const handleTranslate = async (e) => {
 		e.preventDefault();
 		setLoading(true);
@@ -105,13 +105,14 @@ function Home() {
 		try {
 			// Convert selected language to code
 			const languageCode = Object.keys(languageMap).find(key => languageMap[key] === language);
-			// Split long text into parts for machine translation
+			// // Split long text into parts for machine translation
 			const parts = translationModel === 'llm' ? [text] : splitText(text);
 			let translations = [];
 			// Translate text
 			for (let i = 0; i < parts.length; i++) {
 				const response = await fetch('http://localhost:5000/api/translate', {
 					method: 'POST',
+					credentials: 'include',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						text: parts[i],
@@ -137,7 +138,7 @@ function Home() {
 		}
 		setLoading(false);
 	};
-
+	
 	const splitText = (text) => {
 		const maxLength = 512;
 		const parts = [];
@@ -146,7 +147,7 @@ function Home() {
 		}
 		return parts;
 	};
-
+	
 	return (
 		<div className='container'>
 			<div className='header'>
@@ -155,6 +156,8 @@ function Home() {
 					{loggedIn ? (
 						<>
 							<span>{name}</span>
+							<button className='button' onClick={() => navigate('/extract-history')}>Extract History</button>
+							<button className='button' onClick={() => navigate('/translate-history')}>Translate History</button>
 							<button className='button' onClick={logout}>Logout</button>
 						</>
 					) : (

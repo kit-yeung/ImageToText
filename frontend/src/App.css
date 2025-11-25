@@ -1,20 +1,20 @@
 body {
-    margin: 0;
-    max-width: 100%;
+	margin: 0;
+	max-width: 100%;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .container {
-    padding: 20px;
+	padding: 20px;
 }
 
 .main {
-    display: flex;
+	display: flex;
 }
 
 .fillform {
@@ -24,44 +24,36 @@ body {
 	text-align: center;
 }
 
-.extraction {
-    width: 50%;
-    padding: 20px;
-    margin: 8px;
-    border: 1px solid grey;
-    border-radius: 4px;
-}
-
-.translation {
-    width: 50%;
-    padding: 20px;
-    margin: 8px;
-    border: 1px solid grey;
-    border-radius: 4px;
+.extraction, .translation {
+	width: 50%;
+	padding: 20px;
+	margin: 8px;
+	border: 1px solid grey;
+	border-radius: 4px;
 }
 
 .textarea, .select {
-    width: 100%;
-    padding: 4px;
-    margin: 4px;
-    border: 1px solid grey;
-    border-radius: 4px;
+	width: 100%;
+	padding: 4px;
+	margin: 4px;
+	border: 1px solid grey;
+	border-radius: 4px;
 }
 
 .button {
-    background-color: #4444ee;
-    color: white;
-    cursor: pointer;
+	background-color: #4444ee;
+	color: white;
+	cursor: pointer;
 	margin: 4px;
 }
 
 .button:hover:not(:disabled) {
-    background-color: #4444cc;
+	background-color: #4444cc;
 }
 
 .button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 
 .hiddenbutton {
@@ -73,23 +65,23 @@ body {
 }
 
 .error {
-    background-color: #ffeeee;
-    color: red;
-    padding: 8px;
-    margin: 4px;
-    border-radius: 4px;
+	background-color: #ffeeee;
+	color: red;
+	padding: 8px;
+	margin: 4px;
+	border-radius: 4px;
 }
 
 .result {
-    background-color: #ddffee;
-    color: green;
-    padding: 8px;
-    margin: 4px;
-    border-radius: 4px;
-    text-align: left;
+	background-color: #ddffee;
+	color: green;
+	padding: 8px;
+	margin: 4px;
+	border-radius: 4px;
+	text-align: left;
 }
 
 img {
-    max-width: 100%;
-    height: auto;
+	max-width: 100%;
+	height: auto;
 }

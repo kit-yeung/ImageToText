@@ -1,7 +1,5 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_from_directory
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel, M2M100ForConditionalGeneration, M2M100Tokenizer
 from PIL import Image
@@ -12,6 +10,10 @@ import torch
 import easyocr
 import pycld2
 import requests
+from datetime import datetime
+import uuid
+
+from models import db, User, ExtractHistory, TranslateHistory
 
 # Load environment variables from .env
 load_dotenv()
@@ -21,19 +23,14 @@ CORS(app, supports_credentials=True)
 app.secret_key = os.getenv('SECRET_KEY', 'default-secret-key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
-# Database table
-class User(db.Model):
-    name = db.Column(db.String(50), primary_key=True)
-    email = db.Column(db.String(100), nullable=False)
-    password_hash = db.Column(db.String(50), nullable=False)
+# Initialize database
+db.init_app(app)
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+# Create folder for user uploaded image
+UPLOAD_FOLDER = 'upload'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 LANGUAGES = ['en', 'fr']
 reader = easyocr.Reader(LANGUAGES, gpu=torch.cuda.is_available())
@@ -109,6 +106,11 @@ def detect_language(text):
     except:
         return 'en'
 
+# For user uploaded image
+@app.route('/upload/<file>')
+def upload_image(file):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], file)
+
 @app.route('/api/extract', methods=['POST'])
 def extract_image_text():
     file = request.files['image']
@@ -141,6 +143,21 @@ def extract_image_text():
         text_type_detected = 'Handwritten' if text_type == 'handwritten' else 'Printed'
     # Determine language
     language = input_language if input_language != 'auto' else detect_language(extracted_text)
+    # Save to history if logged in
+    if 'user_name' in session:
+        filename = f'{uuid.uuid4()}.jpg'
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image.save(filepath)
+        history = ExtractHistory(
+            user_name=session['user_name'],
+            timestamp=datetime.now(),
+            image_path=filename,
+            extracted_text=extracted_text,
+            text_type=text_type_detected,
+            language=language
+        )
+        db.session.add(history)
+        db.session.commit()
     return jsonify({
         'extracted_text': extracted_text,
         'text_type': text_type_detected,
@@ -162,11 +179,8 @@ def translate_text():
         return jsonify({'error': f'Unsupported language: {detected_language}'}), 400
     # Return original text if input and output languages are the same
     if detected_language == language_code:
-        return jsonify({
-            'translated_text': text,
-            'detected_language': detected_language
-        })
-    try:
+        translated_text = text
+    else:
         # Machine translation
         if translation_model == 'nmt':
             nmt_tokenizer.src_lang = detected_language
@@ -215,12 +229,49 @@ def translate_text():
             )
             ollama_response.raise_for_status()
             translated_text = ollama_response.json()['message']['content'].strip()
-        return jsonify({
-            'translated_text': translated_text,
-            'detected_language': detected_language
-        })
-    except Exception as e:
-        return jsonify({'error': f'Translation failed: {str(e)}'}), 500
+    # Save to history if logged in
+    if 'user_name' in session:
+        history = TranslateHistory(
+            user_name=session['user_name'],
+            timestamp=datetime.now(),
+            input_text=text,
+            translated_text=translated_text,
+            input_language=detected_language,
+            output_language=language_code
+        )
+        db.session.add(history)
+        db.session.commit()
+    return jsonify({
+        'translated_text': translated_text,
+        'detected_language': detected_language
+    })
+
+@app.route('/api/extract_history', methods=['GET'])
+def get_extract_history():
+    if 'user_name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    items = ExtractHistory.query.filter_by(user_name=session['user_name']).order_by(ExtractHistory.timestamp.desc()).all()
+    return jsonify([{
+        'timestamp': i.timestamp.isoformat(),
+        'image_url': f'/upload/{i.image_path}',
+        'extracted_text': i.extracted_text,
+        'text_type': i.text_type,
+        'language': i.language
+    } for i in items])
+
+
+@app.route('/api/translate_history', methods=['GET'])
+def get_translate_history():
+    if 'user_name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    items = TranslateHistory.query.filter_by(user_name=session['user_name']).order_by(TranslateHistory.timestamp.desc()).all()
+    return jsonify([{
+        'timestamp': i.timestamp.isoformat(),
+        'input_text': i.input_text,
+        'translated_text': i.translated_text,
+        'input_language': i.input_language,
+        'output_language': i.output_language
+    } for i in items])
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -262,9 +313,8 @@ def status():
         return jsonify({'logged_in': True, 'name': user.name})
     return jsonify({'logged_in': False})
 
-# Initialize database
-@app.before_request
-def create_table():
+# Create database tables
+with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':

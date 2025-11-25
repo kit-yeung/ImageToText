@@ -6,7 +6,7 @@ export default function Login() {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
-
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError('');
@@ -24,7 +24,7 @@ export default function Login() {
 			setError(data.error || 'Login failed');
 		}
 	};
-
+	
 	return (
 		<div className='container'>
 			<button className='hiddenbutton' onClick={() => navigate('/')}>ImageToText</button>
@@ -46,8 +46,8 @@ export default function Login() {
 						onChange={(e) => setPassword(e.target.value)}
 						required
 					/>
-					<button type='submit'>Login</button>
-					<button type='button' onClick={() => navigate('/signup')}>Sign Up</button>
+					<button type='submit' className='button'>Login</button>
+					<button className='button' onClick={() => navigate('/signup')}>Sign Up</button>
 				</form>
 			</div>
 		</div>

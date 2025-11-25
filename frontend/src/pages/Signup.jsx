@@ -54,8 +54,8 @@ export default function Signup() {
 						onChange={(e) => setPassword(e.target.value)}
 						required
 					/>
-					<button type='submit'>Sign Up</button>
-					<button type='button' onClick={() => navigate('/login')}>Login</button>
+					<button type='submit' className='button'>Sign Up</button>
+					<button className='button' onClick={() => navigate('/login')}>Login</button>
 				</form>
 			</div>
 		</div>
