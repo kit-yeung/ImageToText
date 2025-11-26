@@ -44,10 +44,13 @@ pip install -r requirements.txt
 npm install
 ```
 4. Install Ollama model
+- Linux
 ```
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull phi4-mini
 ```
+- [Windows](https://ollama.com/download/windows)
+- [macOS](https://ollama.com/download/mac)
 
 ## Run Project
 1. Activate virtual environment
