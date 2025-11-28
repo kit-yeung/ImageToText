@@ -27,7 +27,7 @@ jwt = JWTManager(app)
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
-    username = data.get("username")
+    username = data.get("name")
     email = data.get("email")
     password = data.get("password")
 
@@ -54,7 +54,7 @@ def signup():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username_or_email = data.get("username")
+    username_or_email = data.get("name")
     password = data.get("password")
 
     if not username_or_email or not password:
@@ -92,6 +92,30 @@ def login():
 @jwt_required()
 def logout():
     return jsonify({"message": "Logout successful! Please delete token on client."}), 200
+
+
+@app.route('/api/status', methods=['GET'])
+@jwt_required(optional=True)
+def status():
+    try:
+        current_user_id = get_jwt_identity()
+        if current_user_id:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, username, email FROM users WHERE id = ?",
+                (current_user_id,)
+            )
+            user = cursor.fetchone()  
+            if user:
+                return jsonify({
+                    'logged_in': True,
+                    'name': user['username']
+                }), 200
+        return jsonify({'logged_in': False}), 200
+        
+    except Exception as e:
+        return jsonify({'logged_in': False}), 200
 
 
 @app.route('/api/extract', methods=['POST'])
@@ -171,15 +195,15 @@ def detect_extract():
 
 
 @app.route('/api/translate', methods=['POST'])
-def translate_text():
+def translate():
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "No JSON payload provided"}), 400
 
     text = data.get("text", "")
-    src_lang = data.get("src_lang", "en")
-    tgt_lang = data.get("tgt_lang", None)  # zh, fr, de, es, it, ru ...
+    src_lang = data.get("input_language", "en")
+    tgt_lang = data.get("language", None)  # zh, fr, de, es, it, ru ...
 
     if not text.strip():
         return jsonify({"error": "Text cannot be empty"}), 400
@@ -188,12 +212,12 @@ def translate_text():
         return jsonify({"error": "tgt_lang is required"}), 400
 
     try:
+        print(f"text:{text},src_lang:{src_lang},tgt_lang:{tgt_lang}")
         translated = translate_text(text, src_lang, tgt_lang)
         return jsonify({
             "input_text": text,
             "translated_text": translated,
-            "src_lang": src_lang,
-            "tgt_lang": tgt_lang
+            "detected_language": src_lang
         })
 
     except Exception as e:
