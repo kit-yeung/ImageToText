@@ -3,10 +3,8 @@
 This project implements:
 
 -   Text Detection: Use CRAFT to detect text regions and crop image patches for recognition.
--   Text Recognition: Apply TrOCR for English printed/handwritten text.
--   Text Correction: Edit-distance candidate generation with BERT-MLM scoring for correction
--   Evaluation Metrics: Measure performance using Word Error Rate (WER) and Character Error Rate (CER) with jiwer and editdistance.
--   Dataset: Bentham Handwritten Dataset for training the TrOCR model on English handwritten text recognition tasks.
+-   Text Extraction: Use EasyOCR and TrOCR engines to extract text from detected regions. Automatically selects the best OCR result based on accuracy metrics or predefined rules.
+-   Evaluation Metrics: Measure performance using Word Error Rate (WER) and Character Error Rate (CER).
 -   Text Translation: Translate extracted text to the user-selected target language using Helsinki-NLP MarianMTModel.
 -   Frameworks: The Web API is built with Flask.
 
@@ -68,26 +66,37 @@ pip install opencv-contrib-python==4.7.0.72
 -   Content-Type: `multipart/form-data`
 -   Parameters:
     -   `image` (file, required): Image file containing text
+    -   `input_language` (text, optional): Language code (e.g., en, fr, ru). Default: auto for automatic detection
+    -   `text_type` (text, optional): Text type (handwritten or printed). Default: auto for automatic detection
     -   `ground_truth` (text, optional): Ground truth text for evaluation
 
 **Response:**
 
 ```json
 {
-    "corrected": "...",
+    "extracted_text": "...",
+    "text_type": "handwritten",
+    "detected_language": "en",
     "metrics": {
-        "cer_after": 0.05555555555555555,
-        "cer_before": 0.0,
-        "wer_after": 0.045454545454545456,
-        "wer_before": 0.0
+        "easyocr_cer": 0.3888888888888889,
+        "easyocr_wer": 0.6363636363636364,
+        "trocr_cer": 0.0,
+        "trocr_wer": 0.0
     },
-    "raw": "..."
+    "easyocr": {
+        "crops/image_crop_1.jpg": "...",
+        "crops/image_crop_2.jpg": "..."
+    },
+    "trocr": {
+        "crops/image_crop_1.jpg": "...",
+        "crops/image_crop_2.jpg": "..."
+    }
 }
 ```
 
 ### 2. Text Translation
 
-**Endpoint:** `POST /api/translation`
+**Endpoint:** `POST /api/translate`
 
 **Request:**
 

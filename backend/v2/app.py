@@ -1,6 +1,11 @@
-import io, os, traceback
+import os
+import torch
+import easyocr
+import shutil
+from werkzeug.utils import secure_filename
+from datasets import load_metric
 from flask import Flask, request, jsonify
-from PIL import Image
+from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
     JWTManager, create_access_token,
@@ -8,33 +13,16 @@ from flask_jwt_extended import (
 )
 from database import get_db
 import sqlite3
-from ocr.craft_detect import detect_boxes_from_pil
-from ocr.trocr_recognize import TrocrRecognizer
-from ocr.easyocr_fallback import easyocr_detect_and_recognize
-from utils.sort_and_crop import sort_boxes, crop_from_boxes
-from utils.image_preprocess import enhance_for_detection
-from corrector.edit_distance import SimpleCandidateGenerator
-from corrector.bert_mlm_corrector import BertMLMCorrector
-from evaluation.metrics import compute_wer, cer
-from translation.translation_model import translate_text
-from config import OCR_DEVICE, CROP_PADDING
-from wordfreq import top_n_list
+from detect_and_crop import detect_and_crop
+from extract_util import run_trocr, detect_language_auto, detect_text_type_auto
+from translation_model import translate_text
 
 app = Flask(__name__)
+
+CORS(app, supports_credentials=True)
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-
-# OCR models
-recognizer = TrocrRecognizer()
-mlm = BertMLMCorrector(device=OCR_DEVICE)
-
-# The vocabulary list uses the top 50,000 most frequent English words from wordfreq
-vocab = top_n_list("en", 50000)
-
-# Candidate generator
-candidate_gen = SimpleCandidateGenerator(vocab)
-
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
@@ -107,73 +95,83 @@ def logout():
 
 
 @app.route('/api/extract', methods=['POST'])
-def api_ocr():
+def detect_extract():
+    if "image" not in request.files:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    input_language = request.form.get('input_language', 'auto')
+    text_type = request.form.get('text_type', 'auto')
+
+    # Create temp folders
+    UPLOAD_DIR = "uploads"
+    CROP_DIR = "crops"
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    os.makedirs(CROP_DIR, exist_ok=True)
+    
+    file = request.files["image"]
+    filename = secure_filename(file.filename)
+    path = os.path.join(UPLOAD_DIR, filename)
+    file.save(path)
+
+    # 1. Detect + Crop
+    crop_paths = detect_and_crop(path, out_dir=CROP_DIR)
+
+    if input_language == "auto":
+        input_language = detect_language_auto(crop_paths)
+    if text_type == "auto":
+        text_type = detect_text_type_auto(crop_paths)
+
+    # 2. EasyOCR
+    easyocr_results = {}
+    reader = easyocr.Reader(["en", input_language], gpu=False)
+    for p in crop_paths:
+        result = reader.readtext(p, detail=0)
+        easyocr_results[p] = " ".join(result)
+
+    # 3. TrOCR
+    trocr_results = {}
+    for p in crop_paths:
+        trocr_results[p] = run_trocr(p)
+
+    easyocr_full_text = " ".join(easyocr_results.values())
+    trocr_full_text = " ".join(trocr_results.values())
+
+    # 4. Compute CER / WER only if ground_truth is provided
+    ground_truth = request.form.get('ground_truth', None)
+    metrics = {}
+    extracted_text = None
+    if ground_truth:
+        cer_metric = load_metric("cer")
+        wer_metric = load_metric("wer")
+        metrics['easyocr_cer'] = cer_metric.compute(predictions=[easyocr_full_text], references=[ground_truth])
+        metrics['easyocr_wer'] = wer_metric.compute(predictions=[easyocr_full_text], references=[ground_truth]) 
+        metrics['trocr_cer'] = cer_metric.compute(predictions=[trocr_full_text], references=[ground_truth])
+        metrics['trocr_wer'] = wer_metric.compute(predictions=[trocr_full_text], references=[ground_truth])
+        extracted_text = trocr_full_text if metrics['easyocr_cer'] > metrics['trocr_cer'] else easyocr_full_text
+    else:
+        extracted_text = trocr_full_text if input_language == 'en' and text_type == 'handwritten' else easyocr_full_text
+
+    # Cleanup temp folders
     try:
-        if 'image' not in request.files:
-            return jsonify({'error': 'no image uploaded'}), 400
-
-        file = request.files['image']
-        img = Image.open(io.BytesIO(file.read())).convert('RGB')
-
-        # Enhance image for detection
-        img_for_detect = enhance_for_detection(img)
-
-        # Run CRAFT text detection
-        boxes = detect_boxes_from_pil(img_for_detect)
-        raw_texts = []
-
-        # If CRAFT found something
-        if boxes:
-            boxes_sorted = sort_boxes(boxes)
-            crops = crop_from_boxes(img, boxes_sorted, padding=CROP_PADDING)
-
-            for crop in crops:
-                try:
-                    raw = recognizer.recognize(crop)
-                except Exception:
-                    raw = ''
-                raw_texts.append(raw)
-
-        # Fallback to EasyOCR if CRAFT fails
-        if not boxes or all(not t for t in raw_texts):
-            try:
-                fb_boxes, fb_texts = easyocr_detect_and_recognize(img)
-                if fb_texts:
-                    raw_texts = fb_texts
-            except Exception:
-                pass
-
-        # Merge OCR results
-        raw_sentence = ' '.join([t for t in raw_texts if t]).strip()
-
-        # Correction
-        tokens = raw_sentence.split()
-        corrected_tokens = mlm.correct_sentence(tokens, candidate_gen) if tokens else []
-        corrected_sentence = ' '.join(corrected_tokens).strip()
-
-        # Metrics 
-        ground = request.form.get('ground_truth', None)
-        metrics = {}
-
-        if ground:
-            metrics['wer_before'] = compute_wer(ground, raw_sentence)
-            metrics['wer_after'] = compute_wer(ground, corrected_sentence)
-            metrics['cer_before'] = cer(ground, raw_sentence)
-            metrics['cer_after'] = cer(ground, corrected_sentence)
-
-        return jsonify({
-            'raw': raw_sentence,
-            'corrected': corrected_sentence,
-            'metrics': metrics
-        })
-
+        if os.path.exists(UPLOAD_DIR):
+            shutil.rmtree(UPLOAD_DIR)
+        if os.path.exists(CROP_DIR):
+            shutil.rmtree(CROP_DIR)
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({'error': 'internal error', 'details': str(e)}), 500
+        print(f"Error during cleanup: {e}")
+
+    return jsonify({
+        "extracted_text": extracted_text,
+        'text_type': text_type,
+        'detected_language': input_language,
+        "metrics": metrics,
+        "easyocr": easyocr_results,
+        "trocr": trocr_results 
+    })
 
 
-@app.route('/api/translation', methods=['POST'])
-def translation_api():
+@app.route('/api/translate', methods=['POST'])
+def translate_text():
     data = request.get_json()
 
     if not data:
