@@ -1,19 +1,20 @@
-from flask import Flask, request, jsonify, session, send_from_directory
+from flask import Flask, request, jsonify, session, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel, M2M100ForConditionalGeneration, M2M100Tokenizer
 from PIL import Image
-from collections import defaultdict
 import numpy as np
-import os
 import torch
 import easyocr
 import pycld2
-import requests
-from datetime import datetime
-import uuid
 
-from models import db, Users, ExtractHistory, TranslateHistory
+import os
+import io
+from collections import defaultdict
+from datetime import datetime
+
+from models.database import db, Users, ExtractHistory, TranslateHistory
+from models.llm import llm_translate
 
 # Load environment variables from .env
 load_dotenv()
@@ -26,11 +27,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
 db.init_app(app)
-
-# Create folder for user uploaded image
-UPLOAD_FOLDER = 'upload'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 LANGUAGES = ['en', 'fr']
 reader = easyocr.Reader(LANGUAGES, gpu=torch.cuda.is_available())
@@ -106,10 +102,23 @@ def detect_language(text):
     except:
         return 'en'
 
-# For user uploaded image
-@app.route('/upload/<file>')
-def upload_image(file):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], file)
+# For user input image from database
+@app.route('/api/image/<timestamp>')
+def upload_image(timestamp):
+    if 'user_name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    item = ExtractHistory.query.filter_by(
+        user_name=session['user_name'],
+        timestamp=datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+    ).first()
+    if not item or not item.image_data:
+        return jsonify({'error': 'Image not found'}), 404
+    return send_file(
+        io.BytesIO(item.image_data),
+        mimetype='image/jpeg',
+        as_attachment=False,
+        download_name=f'img_{timestamp}.jpg'
+    )
 
 @app.route('/api/extract', methods=['POST'])
 def extract_image_text():
@@ -145,13 +154,14 @@ def extract_image_text():
     language = input_language if input_language != 'auto' else detect_language(extracted_text)
     # Save to history if logged in
     if 'user_name' in session:
-        filename = f'{uuid.uuid4()}.jpg'
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image.save(filepath)
+        # Read raw data from image
+        file.stream.seek(0)
+        image_data = file.stream.read()
+        # Store to database
         history = ExtractHistory(
             user_name=session['user_name'],
             timestamp=datetime.now(),
-            image_path=filename,
+            image_data=image_data,
             extracted_text=extracted_text,
             text_type=text_type_detected,
             language=language
@@ -199,36 +209,9 @@ def translate_text():
                 max_new_tokens=1024
             )
             translated_text = nmt_tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
-        # LLM translation
         else:
-            lang_map = {'en': 'English', 'fr': 'French'}
-            target_lang = lang_map[language_code]
-            system_prompt = (
-                'You are a precise translator. Output only the translated text in the target language.'
-                'Never add explanations, notes, answers to questions, or extra content.'
-                'Preserve formatting, line breaks, and punctuation exactly. Fix obvious OCR/spelling errors naturally.'
-            )
-            user_prompt = f'Translate the following to {target_lang}:\n\n{text}'
-            ollama_response = requests.post(
-                'http://localhost:11434/api/chat',
-                json={
-                    'model': 'phi4-mini',
-                    'messages': [
-                        {'role': 'system', 'content': system_prompt},
-                        {'role': 'user', 'content': user_prompt}
-                    ],
-                    'options': {
-                        # Deterministic output for translation
-                        'temperature': 0.0,    
-                        'num_ctx': 8192,
-                        'num_predict': 1024
-                    },
-                    'stream': False
-                },
-                timeout=60
-            )
-            ollama_response.raise_for_status()
-            translated_text = ollama_response.json()['message']['content'].strip()
+            # LLM translation
+            translated_text = llm_translate(text, language_code)
     # Save to history if logged in
     if 'user_name' in session:
         history = TranslateHistory(
@@ -253,7 +236,7 @@ def get_extract_history():
     items = ExtractHistory.query.filter_by(user_name=session['user_name']).order_by(ExtractHistory.timestamp.desc()).all()
     return jsonify([{
         'timestamp': i.timestamp.isoformat(),
-        'image_url': f'/upload/{i.image_path}',
+        'image_url': f'/api/image/{i.timestamp.isoformat()}',
         'extracted_text': i.extracted_text,
         'text_type': i.text_type,
         'language': i.language

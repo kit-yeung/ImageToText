@@ -19,7 +19,7 @@ class Users(db.Model):
 class ExtractHistory(db.Model):
     user_name = db.Column(db.String(50), db.ForeignKey('users.name'), primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.now, primary_key=True)
-    image_path = db.Column(db.String(255), nullable=False)
+    image_data = db.Column(db.LargeBinary, nullable=False)
     extracted_text = db.Column(db.Text, nullable=False)
     text_type = db.Column(db.String(20), nullable=False)
     language = db.Column(db.String(20), nullable=False)
