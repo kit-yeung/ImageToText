@@ -60,6 +60,12 @@ curl -fsSL https://ollama.com/install.sh | sh
 ollama pull phi4-mini
 ```
 
+6. (Optional) Create `.env` in backend
+```
+SECRET_KEY=your-secret-key
+SQLALCHEMY_DATABASE_URI=your-database-url
+```
+
 ## Run Project
 1. Activate virtual environment
 ```
