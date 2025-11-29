@@ -24,7 +24,8 @@ ImageToText is a web application that extracts text or handwriting in a language
 | --- | --- |
 | Frontend | React (Vite) |
 | Backend | Flask |
-| Database | SQLite |
+| Database | PostgreSQL |
+| | SQLite (fallback) |
 | Deep Learning | PyTorch |
 | OCR | EasyOCR (printed) |
 | | TrOCR (handwritten) |
