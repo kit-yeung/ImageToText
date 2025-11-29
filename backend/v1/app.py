@@ -102,6 +102,16 @@ def detect_language(text):
     except:
         return 'en'
 
+def compress_image(image_file, max_size=1000):
+    image = Image.open(image_file).convert('RGB')
+    # Downscale image if too large
+    if image.width > max_size or image.height > max_size:
+        image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+    # Save compressed image
+    output = io.BytesIO()
+    image.save(output, format='WEBP')
+    return output.getvalue()
+
 # For user input image from database
 @app.route('/api/image/<timestamp>')
 def upload_image(timestamp):
@@ -109,15 +119,15 @@ def upload_image(timestamp):
         return jsonify({'error': 'Unauthorized'}), 401
     item = ExtractHistory.query.filter_by(
         user_name=session['user_name'],
-        timestamp=datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        timestamp=datetime.fromisoformat(timestamp)
     ).first()
     if not item or not item.image_data:
         return jsonify({'error': 'Image not found'}), 404
     return send_file(
         io.BytesIO(item.image_data),
-        mimetype='image/jpeg',
+        mimetype='image/webp',
         as_attachment=False,
-        download_name=f'img_{timestamp}.jpg'
+        download_name=f'img_{timestamp}.webp'
     )
 
 @app.route('/api/extract', methods=['POST'])
@@ -154,9 +164,10 @@ def extract_image_text():
     language = input_language if input_language != 'auto' else detect_language(extracted_text)
     # Save to history if logged in
     if 'user_name' in session:
-        # Read raw data from image
+        # Read and compress raw data from image
         file.stream.seek(0)
         image_data = file.stream.read()
+        image_data = compress_image(io.BytesIO(image_data))
         # Store to database
         history = ExtractHistory(
             user_name=session['user_name'],
@@ -288,11 +299,14 @@ def logout():
     session.clear()
     return jsonify({'message': 'Logged out'})
 
+# Return user login status
 @app.route('/api/status', methods=['GET'])
 def status():
-    # Return user login status
     if 'user_name' in session:
         user = db.session.get(Users, session['user_name'])
+        if user is None:
+            session.clear()
+            return jsonify({'logged_in': False})
         return jsonify({'logged_in': True, 'name': user.name})
     return jsonify({'logged_in': False})
 
