@@ -13,7 +13,7 @@ import requests
 from datetime import datetime
 import uuid
 
-from models import db, User, ExtractHistory, TranslateHistory
+from models import db, Users, ExtractHistory, TranslateHistory
 
 # Load environment variables from .env
 load_dotenv()
@@ -21,7 +21,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = os.getenv('SECRET_KEY', 'default-secret-key')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize database
@@ -278,7 +278,7 @@ def login():
     data = request.get_json()
     name = data.get('name')
     password = data.get('password')
-    user = db.session.get(User, name)
+    user = db.session.get(Users, name)
     # Log in if name and password match in database
     if user and user.check_password(password):
         session['user_name'] = user.name
@@ -292,9 +292,9 @@ def signup():
     email = data.get('email')
     password = data.get('password')
     # Sign up if name not in database
-    if db.session.get(User, name):
+    if db.session.get(Users, name):
         return jsonify({'error': 'Name already used'}), 400
-    user = User(name=name, email=email)
+    user = Users(name=name, email=email)
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -309,7 +309,7 @@ def logout():
 def status():
     # Return user login status
     if 'user_name' in session:
-        user = db.session.get(User, session['user_name'])
+        user = db.session.get(Users, session['user_name'])
         return jsonify({'logged_in': True, 'name': user.name})
     return jsonify({'logged_in': False})
 

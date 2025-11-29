@@ -1,4 +1,4 @@
 .env
 instance/
-___pycache__/
+__pycache__/
 upload/
