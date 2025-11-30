@@ -1,20 +1,70 @@
 body {
-	margin: 0;
-	max-width: 100%;
+   
+   justify-content: center;
+
 }
 
-.header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
 
+.headline{
+
+color: #1717c0;
+font: weight 600px;;
+font-size: 25px;
+margin-bottom: 16px;
+text-align: center;
+
+}
+.info{
+
+text-align: center;
+ color:rgb(93, 26, 160);
+ font-family: 'Times New Roman', Times, serif;
+ font-size: 20px;
+
+}
+.load{
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: x-large;
+    color: rgb(5, 5, 5);
+    text-align: center;
+
+}
+.loading-icon{
+
+height: 100px;
+width: 100px;
+
+}
+.loading-image{
+
+height: 100%;
+width: 200px;
+
+}
+.navbar{
+
+
+ background-color: #4444ee;
+
+
+
+}
 .container {
-	padding: 20px;
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    display: block;
+
+    justify-content: center;
+    align-items: center;
+   
 }
 
 .main {
-	display: flex;
+    display: flex;
 }
 
 .fillform {
@@ -24,64 +74,367 @@ body {
 	text-align: center;
 }
 
-.extraction, .translation {
-	width: 50%;
-	padding: 20px;
-	margin: 8px;
-	border: 1px solid grey;
-	border-radius: 4px;
+.extraction {
+    width: 50%;
+    padding: 20px;
+    margin: 8px;
+    border: 1px solid grey;
+    border-radius: 4px;
+}
+
+.translation {
+    width: 50%;
+    padding: 20px;
+    margin: 8px;
+    border: 1px solid grey;
+    border-radius: 4px;
 }
 
 .textarea, .select {
-	width: 100%;
-	padding: 4px;
-	margin: 4px;
-	border: 1px solid grey;
-	border-radius: 4px;
+    width: 100%;
+    padding: 4px;
+    margin: 4px;
+    border: 1px solid grey;
+    border-radius: 4px;
 }
 
 .button {
-	background-color: #4444ee;
-	color: white;
-	cursor: pointer;
+    background-color: #4444ee;
+    color: white;
+    cursor: pointer;
 	margin: 4px;
 }
 
 .button:hover:not(:disabled) {
-	background-color: #4444cc;
+    background-color: #4444cc;
 }
 
 .button:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.log-container{
+    border-radius: 6px;
+
+margin-top: 10px;
+   background-color: #4444ee;
+width: 1000px;
+height: 500px;
+
+
+}
+.signup-container{
+
+
+
+border-radius: 6px;
+
+
+
+   background-color: #4444ee;
+width: 1000px;
+height: 500px;
+
+
 }
 
+.btn-hide{
+
+color: #ddffee;
+
+    display: flex;
+    flex-direction: column;
+    text-align:center;
+}
 .hiddenbutton {
 	font-size: 24px;
 	font-weight: bold;
 	background: none;
 	border: none;
 	outline: none;
+    text-align: center;
 }
 
 .error {
-	background-color: #ffeeee;
-	color: red;
-	padding: 8px;
-	margin: 4px;
-	border-radius: 4px;
+    background-color: #ffeeee;
+    color: red;
+    padding: 8px;
+    margin: 4px;
+    border-radius: 4px;
 }
 
 .result {
-	background-color: #ddffee;
-	color: green;
-	padding: 8px;
-	margin: 4px;
-	border-radius: 4px;
-	text-align: left;
+    background-color: #ddffee;
+    color: green;
+    padding: 8px;
+    margin: 4px;
+    border-radius: 4px;
+    text-align: left;
 }
 
 img {
-	max-width: 100%;
-	height: auto;
+    max-width: 100%;
+    height: auto;
+}
+.extraction  h2{
+
+font-size: 30px;
+color: #141414;
+font-weight: bold;
+text-align: center;
+
+
+
+}
+.main label{
+
+
+color: white;
+font-weight: 600;
+
+
+}
+.translation h2{
+
+font-weight:bold;
+text-align: center;
+font-size: 30px;
+
+    color: #111111;
+}
+.input-file{
+    margin: 5px;
+
+ height: 30px;
+ width: 100%;
+ 
+
+    background: white;
+    border-radius: 5px;
+}
+.fillform{
+
+width: 1000px;
+margin-left:100px;
+
+    display: block;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border: none
+}
+.fillform h1{
+    
+
+font-weight: bold;
+font-size: 25px;
+
+    text-align: center;
+    color:#ffeeee;
+}
+.fillform .nam{
+    margin-top: 20px;
+    margin-bottom: 20px;
+background-color: transparent;
+border-color: #ffeeee;
+border-width: 3px;
+padding: 10px;
+width: 85%;
+height: 40px;
+border-radius: 5px;
+color: white;
+
+
+}
+.nam::placeholder{
+
+padding: 5px;
+font-size: 15px;
+    color: #f7f4f4;
+    
+}
+.fillform .pass{
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+background-color: transparent;
+border-color: #ffeeee;
+border-width: 3px;
+padding: 10px;
+width: 85%;
+height: 40px;
+border-radius: 5px;
+color: white;
+
+
+}
+.fillform .email{
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+background-color: transparent;
+color: white;
+border-color: #ffeeee;
+border-width: 3px;
+padding: 10px;
+width: 85%;
+height: 40px;
+border-radius: 5px;
+
+}
+.email::placeholder{
+
+padding: 5px;
+font-size: 15px;
+    color: #f7f4f4;
+ 
+}
+
+.pass::placeholder{
+
+padding: 5px;
+font-size: 15px;
+    color: #f7f4f4;
+ 
+}
+.login{
+
+display: block;
+
+    text-align: center;
+}
+
+ .login .logbt{
+
+  padding: 10px;
+background-color: white;
+text-align: center;
+
+border-width: 3px;
+margin-top: 20px;
+margin-bottom: 20px;
+width: 85%;
+height: 40px;
+border-radius: 5px;
+
+
+
+
+}
+
+
+
+
+.log-google .logbt {
+  background-color: white;
+  text-align: center;
+  border-width: 3px;
+  margin-bottom: 20px;
+  width: 85%;
+  height: 40px;
+  border-radius: 5px;
+  margin-left: 60px;
+  /* Flexbox for centering content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Additional styling for the button content */
+  gap: 10px; /* Space between the icon and text */
+}
+
+.google-icon {
+  font-size: 20px; /* Adjust the size of the Google icon */
+}
+
+.signup .signbt{
+
+
+font-weight: 400;
+
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+}
+.sign-txt{
+
+
+
+    color: #1717c0;
+}
+.history-container{
+
+
+
+
+   border-radius: 6px;
+
+margin-top: 10px;
+   background-color: #4444ee;
+width: 1000px;
+height: 500px;
+}
+.history-ext{
+
+
+
+
+	text-align: center;
+	font-weight: 600;
+}
+.ex-container{
+border-radius: 6px;
+
+color: #f7f4f4;
+
+   background-color: #4444ee;
+width: 1000px;
+height: 100%;
+    padding: 20px;
+    display: block;
+	text-align: center;
+
+    justify-content: center;
+    align-items: center;
+   
+
+}
+.card{
+
+border-style: solid;
+border: #f7f4f4;
+display: block;
+
+
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.img-ex{
+
+ border-radius: 5px;
+border-style: solid;
+ box-shadow: #f7f4f4;
+border: #ddffee;
+border-width: 3px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+.translate-container{
+
+border-radius: 6px;
+
+color: #f7f4f4;
+
+   background-color: #4444ee;
+width: 1000px;
+height: 100%;
+    padding: 20px;
+    display: block;
+	text-align: center;
+
+    justify-content: center;
+    align-items: center;
+
 }

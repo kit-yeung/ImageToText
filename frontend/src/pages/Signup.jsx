@@ -27,37 +27,53 @@ export default function Signup() {
 	};
 	
 	return (
-		<div className='container'>
-			<button className='hiddenbutton' onClick={() => navigate('/')}>ImageToText</button>
-			<div className='fillform'>
-				<h2>Sign Up</h2>
-				{error && <p className='error'>{error}</p>}
-				<form onSubmit={handleSubmit}>
-					<input
-						type='text'
-						placeholder='Name'
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						required
-					/>
-					<input
-						type='email'
-						placeholder='Email'
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						required
-					/>
-					<input
-						type='password'
-						placeholder='Password'
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
-					<button type='submit' className='button'>Sign Up</button>
-					<button className='button' onClick={() => navigate('/login')}>Login</button>
-				</form>
-			</div>
-		</div>
-	);
+    <div className='signup-container'>
+      <div className="btn-hide">
+        <button className='hiddenbutton text-white' onClick={() => navigate('/')}>ImageToText</button>
+      </div>
+      <div className='fillform'>
+        <h1 className='text-[20px]'>Sign Up</h1>
+        
+        {error && <p className='error'>{error}</p>}
+
+        <form onSubmit={handleSubmit}>
+          <input
+            className='nam'
+            type='text'
+            placeholder='Name'
+            value={name}
+            onChange={(e) => setName(e.target.value)} 
+            required
+          />
+          
+          <input
+            className='email'
+            type='email'
+            placeholder='Email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} 
+            required
+          />
+          
+          <input
+            className='pass'
+            type='password'
+            placeholder='Password'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} 
+            required
+          />
+          
+          <div className='login'>
+            <button className='logbt' type='submit'>Sign Up</button>
+          </div>
+          
+          <div className='signup'>
+            <span className='sign-txt text-black font-semibold'>Already Have An Account?</span>
+            <button className='signbt' type='button' onClick={() => navigate('/login')}>Log in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

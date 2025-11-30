@@ -22,9 +22,9 @@ function TranslateHistory() {
 	}, [navigate]);
 	
 	return (
-		<div className='container'>
-			<button className='hiddenbutton' onClick={() => navigate('/')}>ImageToText</button>
-			<h2>Translate History</h2>
+		<div className='translate-container'>
+			
+			<h2 className='font-bold text-[40px]'>Translate History</h2>
 			{history.length === 0 ? (
 				<p>None.</p>
 			) : (
@@ -32,9 +32,9 @@ function TranslateHistory() {
 					{history.map((item, index) => (
 						<div key={`${item.timestamp}-${index}`}>
 							<p>{new Date(item.timestamp).toLocaleString()}</p>
-							<p>Language: {item.input_language} to {item.output_language}</p>
-							<p>Original text: {item.input_text}</p>
-							<p>Translated text: {item.translated_text}</p>
+							<p>Language: <span className='font-semibold font-[40px]'>{item.input_language} to {item.output_language}</span></p>
+							<p>Original text:  <span className='font-semibold font-[40px]'>{item.input_text}</span></p>
+							<p>Translated text:  <span className='font-semibold font-[40px]'>{item.translated_text}</span></p>
 						</div>
 					))}
 				</div>

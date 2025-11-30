@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
 	const [name, setName] = useState('');
@@ -25,31 +26,48 @@ export default function Login() {
 		}
 	};
 	
-	return (
-		<div className='container'>
-			<button className='hiddenbutton' onClick={() => navigate('/')}>ImageToText</button>
-			<div className='fillform'>
-				<h2>Login</h2>
-				{error && <p className='error'>{error}</p>}
-				<form onSubmit={handleSubmit}>
-					<input
-						type='text'
-						placeholder='Name'
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						required
-					/>
-					<input
-						type='password'
-						placeholder='Password'
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
-					<button type='submit' className='button'>Login</button>
-					<button className='button' onClick={() => navigate('/signup')}>Sign Up</button>
-				</form>
-			</div>
-		</div>
-	);
+	 return (
+        <div className="log-container shadow-xl">
+            <div className="btn-hide">
+                <button className="hiddenbutton" onClick={() => navigate('/')}>ImageToText</button>
+            </div>
+            <div className="fillform">
+                <h1>Login</h1>
+                {error && <p className="error">{error}</p>}
+                <form onSubmit={handleSubmit}>
+                    <input
+                        className="nam"
+                        type="text"
+                        placeholder="Name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)} 
+                        required
+                    />
+                    <br />
+                    <input
+                        className="pass"
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required
+                    />
+                    <br />
+                    <div className="login">
+                        <button className="logbt" type="submit">Login</button>
+                    </div>
+                    <div className="log-google"> 
+                        <button className="logbt" type="submit"> 
+                            <FcGoogle className="google-icon" />
+                            Log With Google
+                        </button> 
+                    </div>
+                    <div className="signup">
+                        <span className="sign-txt">Don't Have an Account?</span>
+                        <button className="signbt" type="button" onClick={() => navigate('/signup')}>Sign Up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }

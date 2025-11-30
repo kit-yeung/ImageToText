@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Load from '../assets/download.gif'
 
 function Home() {
 	// For user login
@@ -149,102 +150,115 @@ function Home() {
 	};
 	
 	return (
-		<div className='container'>
-			<div className='header'>
-				<h2>{loading ? 'Loading...' : 'ImageToText'}</h2>
-				<div>
-					{loggedIn ? (
-						<>
-							<span>{name}</span>
-							<button className='button' onClick={() => navigate('/extract-history')}>Extract History</button>
-							<button className='button' onClick={() => navigate('/translate-history')}>Translate History</button>
-							<button className='button' onClick={logout}>Logout</button>
-						</>
-					) : (
-					<button className='button' onClick={() => navigate('/login')}>Login</button>
-					)}
-				</div>
-			</div>
-			
-			<div className='main'>
-				<div className='extraction'>
-					<h2>Extract Text from Image</h2>
-					<div>
-						<label htmlFor='textTypeSelect'>Input Type</label>
-						<select
-							id='textTypeSelect'
-							value={selectedTextType}
-							onChange={(e) => setSelectedTextType(e.target.value)}
-							className='select'
-						>
-							{textTypeOptions.map((item) => (
-								<option key={item} value={item}>{item}</option>
-							))}
-						</select>
-					</div>
-					<div>
-						<label htmlFor='inputLanguageSelect'>Input Language</label>
-						<select
-							id='inputLanguageSelect'
-							value={inputLanguage}
-							onChange={(e) => setInputLanguage(e.target.value)}
-							className='select'
-						>
-							{Object.keys(languageMap).map((key) => (
-								<option key={key} value={key}>{languageMap[key]}</option>
-							))}
-						</select>
-					</div>
-					<div>
-						<label htmlFor='lineSeparationSelect'>Line Separation</label>
-						<select
-							id='lineSeparationSelect'
-							value={lineSeparation}
-							onChange={(e) => setLineSeparation(e.target.value)}
-							className='select'
-						>
-							{lineSeparationOptions.map((item) => (
-								<option key={item} value={item}>{item}</option>
-							))}
-						</select>
-					</div>
-					<input type='file' accept='image/*' onChange={handleImage} disabled={loading} />
-					{image && <img src={image} alt='Uploaded Image' />}
-					{uploaded && (
-						<div>
-							<p>Detected Type: {textType}</p>
-							<p>Detected Language: {languageOut}</p>
-						</div>
-					)}
-				</div>
-				
-				<div className='translation'>
-					<h2>Translate Text</h2>
-					<form onSubmit={handleTranslate}>
-						<label htmlFor='inputText'>Input Text</label>
-						<textarea
-							id='inputText'
-							value={text}
-							onChange={(e) => setText(e.target.value)}
-							rows='10'
-							placeholder='Enter text to translate'
-							className='textarea'
-							required
-						/>
-						<label htmlFor='languageSelect'>Output Language</label>
-						<select
-							id='languageSelect'
-							value={language}
-							onChange={(e) => setLanguage(e.target.value)}
-							className='select'
-							required
-						>
-							<option value='' disabled>Select language</option>
-							{Object.values(languageMap).filter(lang => lang !== 'auto').map((lang) => (
-								<option key={lang} value={lang}>{lang}</option>
-							))}
-						</select>
-						<label htmlFor='modelSelect'>Translation Model</label>
+    <div className='container'>
+      <div className='header'>
+        <h2 className='load font-semibold'>
+          {loading ? (
+            <div className="loading-container">
+              <img className='loading-icon' src={Load} alt="Loading..." />
+              {image && (
+                <div className="image-preview-loading">
+                  <p>Processing image:</p>
+                  <img src={image} alt="Processing" className="loading-image" />
+                </div>
+              )}
+            </div>
+          ) : (
+            'ImageToText'
+          )}
+        </h2>
+        
+      
+      </div>
+
+      <div className='main'>
+        <div className='extraction'>
+          <h2>Extract Text from Image</h2>
+          <div>
+            <label htmlFor='textTypeSelect'>Input Type</label>
+            <select
+              id='textTypeSelect'
+              value={selectedTextType}
+              onChange={(e) => setSelectedTextType(e.target.value)}
+              className='select'
+            >
+              {textTypeOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor='inputLanguageSelect'>Input Language</label>
+            <select
+              id='inputLanguageSelect'
+              value={inputLanguage}
+              onChange={(e) => setInputLanguage(e.target.value)}
+              className='select'
+            >
+              {Object.keys(languageMap).map((key) => (
+                <option key={key} value={key}>{languageMap[key]}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor='lineSeparationSelect'>Line Separation</label>
+            <select
+              id='lineSeparationSelect'
+              value={lineSeparation}
+              onChange={(e) => setLineSeparation(e.target.value)}
+              className='select'
+            >
+              {lineSeparationOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </div>
+          <div className='input-file'>
+            <input
+          
+              className='input_img'
+              type='file'
+              accept='image/*'
+              onChange={handleImage}
+              disabled={loading}
+            />
+          </div>
+          {image && !loading && <img src={image} alt='Uploaded Image' />}
+          {uploaded && (
+            <div>
+              <p>Detected Type: {textType}</p>
+              <p>Detected Language: {languageOut}</p>
+            </div>
+          )}
+        </div>
+
+        <div className='translation'>
+          <h2>Translate Text</h2>
+          <form onSubmit={handleTranslate}>
+            <label htmlFor='inputText'>Input Text</label>
+            <textarea
+              id='inputText'
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows='10'
+              placeholder='Enter text to translate'
+              className='textarea'
+              required
+            />
+            <label htmlFor='languageSelect'>Output Language</label>
+            <select
+              id='languageSelect'
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className='select'
+              required
+            >
+              <option value='' disabled>Select language</option>
+              {Object.values(languageMap).filter(lang => lang !== 'auto').map((lang) => (
+                <option key={lang} value={lang}>{lang}</option>
+              ))}
+            </select>
+            <label htmlFor='modelSelect'>Translation Model</label>
 						<select
 							id='modelSelect'
 							value={translationModel}
@@ -254,28 +268,30 @@ function Home() {
 							<option value='nmt'>NMT</option>
 							<option value='llm'>LLM</option>
 						</select>
-						<button type='submit' className='button' disabled={loading}>Translate</button>
-					</form>
-					{translation && (
-						<div>
-							<textarea
-								id='translatedText'
-								value={translation.translated_text}
-								rows='10'
-								className='textarea'
-							/>
-							<p>Detected Language: {languageIn}</p>
-						</div>
-					)}
-				</div>
-			</div>
-			{error && (
-				<div className='error'>
-					{error}
-				</div>
-			)}
-		</div>
-	);
+            <button type='submit' className='button' disabled={loading}>Translate</button>
+          </form>
+          {translation && (
+            <div>
+              <textarea
+                id='translatedText'
+                value={translation.translated_text}
+                rows='10'
+                className='textarea'
+                readOnly
+              />
+              <p>Detected Language: {languageIn}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className='error'>
+          {error}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Home;

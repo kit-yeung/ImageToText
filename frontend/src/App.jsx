@@ -8,10 +8,12 @@ import TranslateHistory from './pages/TranslateHistory';
 import RedirectUser from './components/RedirectUser';
 import RedirectGuest from './components/RedirectGuest';
 import './App.css';
+import Navbar from './components/Navbar';
 
 function App() {
 	return (
 		<BrowserRouter>
+		<Navbar/>
 			<Routes>
 				<Route path='/' element={<Home />} />
 				<Route path='/extract-history' element={
