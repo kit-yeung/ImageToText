@@ -100,7 +100,7 @@ def logout():
 @app.route('/api/status', methods=['GET'])
 @jwt_required(optional=True)
 def status():
-    current_user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()  # Get user ID from JWT
     if current_user_id:
         conn = get_db()
         cursor = conn.cursor()
@@ -110,12 +110,16 @@ def status():
         )
         user = cursor.fetchone()
         conn.close()
+        
         if user:
             return jsonify({
                 'logged_in': True,
-                'name': user['username']
+                'name': user['username'],   # username
+                'email': user['email']      # <-- add email here
             }), 200
+
     return jsonify({'logged_in': False}), 200
+
 
 
 @app.route('/api/extract', methods=['POST'])

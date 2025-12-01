@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import icon from '../assets/user.png'; // User icon
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { NavLink } from "react-router-dom";
 export default function Navbar() {
    
 const [loggedIn, setLoggedIn] = useState(false);
     const [name, setName] = useState('');
-    
+    const location = useLocation();
     
     const checkAuth = async () => {
         const res = await fetch('http://localhost:5000/api/status', {
@@ -19,18 +20,22 @@ const [loggedIn, setLoggedIn] = useState(false);
             setName(data.name);
     };
     
-    const logout = async () => {
-        await fetch('http://localhost:5000/api/logout', {
-            method: 'POST',
-            credentials: 'include',
-        });
-        setLoggedIn(false);
-        setEmail('');
-    };
-    
+  const logout = async () => {
+    await fetch('http://localhost:5000/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+    });
+    setLoggedIn(false);
+    toast.success("Logout in successfully!");
+    setName('');
+};
+
+    const capitalize = (str) =>
+    str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : '';
+
     useEffect(() => {
         checkAuth();
-    }, []);
+    }, [location]);
 
     const navigate = useNavigate();
 
@@ -56,15 +61,16 @@ const [loggedIn, setLoggedIn] = useState(false);
                             tabIndex="-1"
                             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                             <li>
-                                <a className="justify-between">
-                                    {name}
-                                    <span className="badge">New</span>
-                                </a>
+                             <NavLink to='/profile' className="justify-between">
+                               {capitalize(name)}
+                            <span className="badge">New</span>
+                                 </NavLink>
+
                             </li>
                             <li><NavLink to='/extract-history' >Extraction History</NavLink></li>
                              <li><NavLink to='/translate-history'> Translation History</NavLink></li>
 
-                            <li><a onClick={logout}>Logout</a></li>
+                            <li ><NavLink to='/' onClick={logout}>Logout</NavLink></li>
                         </ul>
                     ) : (
                         <ul

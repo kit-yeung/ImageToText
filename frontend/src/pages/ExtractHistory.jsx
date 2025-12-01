@@ -23,24 +23,49 @@ function ExtractHistory() {
 	
 	return (
 		<div className='ex-container'>
-			
-			<h2 className='history-ext text-[40px]'>Extract History</h2>
-			{history.length === 0 ? (
-				<p>None.</p>
-			) : (
-				<div className='card'>
-					{history.map((item, index) => (
-						<div key={`${item.timestamp}-${index}`} >
-							<p className='text-white font-[20px] font-semibold my-5'>{new Date(item.timestamp).toLocaleString()}</p>
-							<div  className='img-ex'><img src={`http://localhost:5000${item.image_url}`} alt='image' /> </div>
-							<p >Extracted text: <span className='font-semibold font-[40px]'>{item.extracted_text}</span></p>
-							<p>Type: {item.text_type}</p>
-							<p>Language: <span className='font-semibold font-[40px]'>{item.language}</span></p>
-						</div>
-					))}
-				</div>
-			)}
-		</div>
+    <h2 className='history-ext text-[40px]'>Extract History</h2>
+
+    {history.length === 0 ? (
+        <p>None.</p>
+    ) : (
+        history.map((item, index) => (
+            <div className="custom-card" key={`${item.timestamp}-${index}`}>
+                <p className='text-white text-[20px] font-semibold my-5'>
+                    {new Date(item.timestamp).toLocaleString()}
+                </p>
+
+                <div className='img-ex'>
+                    <img src={`http://localhost:5000${item.image_url}`} alt='image' />
+                </div>
+
+                <p>Extracted text: 
+                    
+					<span className="yellow-border ml-5">
+                <span className="font-semibold text-white text-[20px]">
+                 {item.extracted_text}
+                  </span>
+</span>
+
+                </p>
+
+                <p>Type: 			<span className="yellow-border ml-5">
+                <span className="font-semibold text-white text-[20px]">
+                 {item.text_type}
+                  </span>
+                   </span>
+                      </p>
+                <p>Language: 
+                     	<span className="yellow-border ml-5">
+                <span className="font-semibold text-white text-[20px]">
+                 {item.language}
+                  </span>
+                   </span>
+                </p>
+            </div>
+        ))
+    )}
+</div>
+
 	);
 }
 

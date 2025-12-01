@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 export default function Signup() {
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
@@ -20,6 +20,7 @@ export default function Signup() {
 		const data = await res.json();
 		if (res.ok) {
 			navigate('/login');
+         toast.success("Sign up successfully!");
 		}
 		else {
 			setError(data.error || 'Signup failed');

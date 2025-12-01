@@ -9,11 +9,27 @@ import RedirectUser from './components/RedirectUser';
 import RedirectGuest from './components/RedirectGuest';
 import './App.css';
 import Navbar from './components/Navbar';
+import Profile from './pages/Profile';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
 	return (
 		<BrowserRouter>
 		<Navbar/>
+			<ToastContainer
+				position="top-center"
+				autoClose={60}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="colored"
+			/>
 			<Routes>
 				<Route path='/' element={<Home />} />
 				<Route path='/extract-history' element={
@@ -36,6 +52,11 @@ function App() {
 							<Signup />
 						</RedirectUser>
 				} />
+				<Route
+				path='/profile'
+				element={
+				<Profile/>
+				}/>
 			</Routes>
 		</BrowserRouter>
 	);

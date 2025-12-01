@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
+import { toast } from 'react-toastify';
 
 export default function Login() {
 	const [name, setName] = useState('');
@@ -20,6 +21,7 @@ export default function Login() {
 		const data = await res.json();
 		if (res.ok) {
 			navigate('/');
+               toast.success("Logout in successfully!");
 		}
 		else {
 			setError(data.error || 'Login failed');

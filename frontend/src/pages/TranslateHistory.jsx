@@ -13,8 +13,7 @@ function TranslateHistory() {
 			if (res.ok) {
 				const data = await res.json();
 				setHistory(data);
-			}
-			else {
+			} else {
 				navigate('/');
 			}
 		};
@@ -25,16 +24,53 @@ function TranslateHistory() {
 		<div className='translate-container'>
 			
 			<h2 className='font-bold text-[40px]'>Translate History</h2>
+
 			{history.length === 0 ? (
 				<p>None.</p>
 			) : (
 				<div>
 					{history.map((item, index) => (
-						<div key={`${item.timestamp}-${index}`}>
-							<p>{new Date(item.timestamp).toLocaleString()}</p>
-							<p>Language: <span className='font-semibold font-[40px]'>{item.input_language} to {item.output_language}</span></p>
-							<p>Original text:  <span className='font-semibold font-[40px]'>{item.input_text}</span></p>
-							<p>Translated text:  <span className='font-semibold font-[40px]'>{item.translated_text}</span></p>
+						<div className="card custom-card" key={`${item.timestamp}-${index}`}>
+
+							<p className="text-white text-[20px] font-semibold my-5">
+							
+								<span className="yellow-border ml-5">
+                         <span className="font-semibold text-white text-[20px]">
+        	                 {new Date(item.timestamp).toLocaleString()}
+                               </span>
+                                   </span>
+
+							</p>
+
+							<p>Language: 
+									
+								<span className="yellow-border ml-5">
+                              <span className="font-semibold text-white text-[20px]">
+        	                       {item.input_language} → {item.output_language}
+                                          </span>
+                                             </span>
+
+								
+							</p>
+
+							<p>Original text:  
+								<span className="yellow-border ml-5">
+                              <span className="font-semibold text-white text-[20px]">
+        	                       {item.input_text}
+                                          </span>
+                                             </span>
+								
+							</p>
+
+							<p>Translated text: 
+								<span className="yellow-border ml-5">
+                              <span className="font-semibold text-white text-[20px]">
+        	                       {item.translated_text}
+                                          </span>
+                                             </span> 
+								
+							</p>
+
 						</div>
 					))}
 				</div>
