@@ -1,9 +1,12 @@
+import io
 import os
 import torch
 import easyocr
 import shutil
 from werkzeug.utils import secure_filename
 from datasets import load_metric
+from datetime import datetime
+from flask import send_file
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -97,28 +100,26 @@ def logout():
 @app.route('/api/status', methods=['GET'])
 @jwt_required(optional=True)
 def status():
-    try:
-        current_user_id = get_jwt_identity()
-        if current_user_id:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute(
-                "SELECT id, username, email FROM users WHERE id = ?",
-                (current_user_id,)
-            )
-            user = cursor.fetchone()  
-            if user:
-                return jsonify({
-                    'logged_in': True,
-                    'name': user['username']
-                }), 200
-        return jsonify({'logged_in': False}), 200
-        
-    except Exception as e:
-        return jsonify({'logged_in': False}), 200
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT id, username, email FROM users WHERE id = ?",
+            (current_user_id,)
+        )
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            return jsonify({
+                'logged_in': True,
+                'name': user['username']
+            }), 200
+    return jsonify({'logged_in': False}), 200
 
 
 @app.route('/api/extract', methods=['POST'])
+@jwt_required(optional=True)
 def detect_extract():
     if "image" not in request.files:
         return jsonify({"error": "No image uploaded"}), 400
@@ -175,6 +176,20 @@ def detect_extract():
     else:
         extracted_text = trocr_full_text if input_language == 'en' and text_type == 'handwritten' else easyocr_full_text
 
+    # Save extraction history into SQLite for authenticated users
+    current_user_id = get_jwt_identity()
+    if current_user_id:     
+        with open(path, "rb") as f:
+            image_bytes = f.read() # Read image bytes for saving to DB
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO extract_history (user_id, timestamp, image_data, extracted_text, text_type, language)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (current_user_id, datetime.now().isoformat(), image_bytes, extracted_text, text_type, input_language))
+        conn.commit()
+        conn.close()
+
     # Cleanup temp folders
     try:
         if os.path.exists(UPLOAD_DIR):
@@ -195,6 +210,7 @@ def detect_extract():
 
 
 @app.route('/api/translate', methods=['POST'])
+@jwt_required(optional=True)
 def translate():
     data = request.get_json()
 
@@ -214,6 +230,19 @@ def translate():
     try:
         print(f"text:{text},src_lang:{src_lang},tgt_lang:{tgt_lang}")
         translated = translate_text(text, src_lang, tgt_lang)
+
+        # Save translation history into SQLite for authenticated users
+        current_user_id = get_jwt_identity()
+        if current_user_id:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO translate_history (user_id, timestamp, input_text, translated_text, input_language, output_language)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (current_user_id, datetime.now().isoformat(), text, translated, src_lang, tgt_lang))
+            conn.commit()
+            conn.close()
+
         return jsonify({
             "input_text": text,
             "translated_text": translated,
@@ -222,6 +251,88 @@ def translate():
 
     except Exception as e:
         return jsonify({"error": f"Translation failed: {str(e)}"}), 500
+
+
+@app.route('/api/extract_history', methods=['GET'])
+@jwt_required()
+def get_extract_history():
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT timestamp, extracted_text, text_type, language
+            FROM extract_history
+            WHERE user_id = ?
+            ORDER BY timestamp DESC
+        """, (current_user_id, ))
+        rows = cursor.fetchall() 
+        result = []
+        for r in rows:
+            result.append({
+                "timestamp": r["timestamp"],
+                "image_url": f"/api/image/{r['timestamp']}",
+                "extracted_text": r["extracted_text"],
+                "text_type": r["text_type"],
+                "language": r["language"]
+            })
+        conn.close()
+        return jsonify(result), 200
+    return jsonify({'error': 'Unauthorized'}), 401
+
+
+@app.route('/api/translate_history', methods=['GET'])
+@jwt_required()
+def get_translate_history():
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT timestamp, input_text, translated_text, input_language, output_language
+            FROM translate_history
+            WHERE user_id = ?
+            ORDER BY timestamp DESC
+        """, (current_user_id, ))
+        rows = cursor.fetchall() 
+        result = []
+        for r in rows:
+            result.append({
+                "timestamp": r["timestamp"],
+                "input_text": r["input_text"],
+                "translated_text": r["translated_text"],
+                "input_language": r["input_language"],
+                "output_language": r["output_language"]
+            })
+        conn.close()
+        return jsonify(result), 200
+    return jsonify({'error': 'Unauthorized'}), 401
+
+
+@app.route('/api/image/<timestamp>', methods=['GET'])
+@jwt_required()
+def get_extracted_image(timestamp):
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT image_data FROM extract_history
+            WHERE user_id = ? AND timestamp = ?
+        """, (current_user_id, timestamp))
+        row = cursor.fetchone()
+        conn.close()
+        if row is None or row["image_data"] is None:
+            return jsonify({"error": "Image not found"}), 404
+
+        image_bytes = row["image_data"]
+        return send_file(
+            io.BytesIO(image_bytes),
+            mimetype='image/webp',
+            as_attachment=False,
+            download_name=f'img_{timestamp}.webp'
+        )
+    return jsonify({'error': 'Unauthorized'}), 401
 
 
 if __name__ == '__main__':

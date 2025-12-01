@@ -19,6 +19,30 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS extract_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            timestamp TEXT NOT NULL,
+            image_data BLOB,
+            extracted_text TEXT,
+            text_type TEXT,
+            language TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS translate_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            timestamp TEXT NOT NULL,
+            input_text TEXT,
+            translated_text TEXT,
+            input_language TEXT,
+            output_language TEXT
+        )
+    """)
+
     conn.commit()
     conn.close()
 
