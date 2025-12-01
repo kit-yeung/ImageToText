@@ -1,12 +1,23 @@
-# ImageToText Translator
+# ImageToText Translator Backend
 
-This project implements:
+## Features
 
--   Text Detection: Use CRAFT to detect text regions and crop image patches for recognition.
--   Text Extraction: Use EasyOCR and TrOCR engines to extract text from detected regions. Automatically selects the best OCR result based on accuracy metrics or predefined rules.
--   Evaluation Metrics: Measure performance using Word Error Rate (WER) and Character Error Rate (CER).
--   Text Translation: Translate extracted text to the user-selected target language using Helsinki-NLP MarianMTModel.
+-   Text Detection: Uses CRAFT (Character Region Awareness for Text detection) to detect text regions and crop image patches for OCR processing.
+-   Text Extraction: Uses TrOCR and EasyOCR engines to extract text from detected regions. Automatically selects the best OCR result based on accuracy metrics or predefined rules.
+-   Evaluation Metrics: Measures performance using Word Error Rate (WER) and Character Error Rate (CER).
+-   Text Translation: Translates extracted text to the user-selected target language using Helsinki-NLP MarianMTModel.
+-   User Authentication: Provides JWT-based signup and login with Bcrypt password hashing for enhanced security.
+-   History Management: Automatically saves extracted and translated text for authenticated users.
 -   Frameworks: The Web API is built with Flask.
+
+## Tech Stack
+
+-   Framework: Flask
+-   Authentication: Flask-JWT-Extended, Flask-Bcrypt
+-   Database: SQLite
+-   Image Processing: OpenCV, Pillow
+-   Text Detection: CRAFT-Text-Detector
+-   OCR Engines: TrOCR + EasyOCR
 
 ## Setup Instructions
 
@@ -106,8 +117,8 @@ pip install opencv-contrib-python==4.7.0.72
 ```json
 {
     "text": "This is the test text.",
-    "src_lang": "en",
-    "tgt_lang": "zh"
+    "input_language": "en",
+    "language": "zh"
 }
 ```
 
@@ -115,9 +126,8 @@ pip install opencv-contrib-python==4.7.0.72
 
 ```json
 {
+    "detected_language": "en",
     "input_text": "This is the test text.",
-    "src_lang": "en",
-    "tgt_lang": "zh",
     "translated_text": "这是测试文本。"
 }
 ```
@@ -133,7 +143,7 @@ pip install opencv-contrib-python==4.7.0.72
 
 ```json
 {
-    "username": "your_username",
+    "name": "your_username",
     "email": "your_email@example.com",
     "password": "your_password"
 }
@@ -176,7 +186,7 @@ or
 
 ```json
 {
-    "username": "your_username_or_email",
+    "name": "your_username_or_email",
     "password": "your_password"
 }
 ```
@@ -189,7 +199,7 @@ or
 {
     "message": "Login successful!",
     "token": "...",
-    "username": "your_username_or_email",
+    "name": "your_username_or_email",
     "email": "your_email@example.com"
 }
 ```
@@ -242,5 +252,33 @@ or
 ```json
 {
     "msg": "Missing Authorization Header"
+}
+```
+
+### 6. User Status Check
+
+**Endpoint:** `GET /api/status`
+
+**Request:**
+
+-   Headers:
+    -   `Authorization (string, optional): Bearer <your_jwt_token>`
+
+**Response:**
+
+-   When user is logged in:
+
+```json
+{
+    "logged_in": true,
+    "name": "..."
+}
+```
+
+-   When user is not logged in:
+
+```json
+{
+    "logged_in": false
 }
 ```
