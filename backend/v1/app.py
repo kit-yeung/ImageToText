@@ -253,7 +253,6 @@ def get_extract_history():
         'language': i.language
     } for i in items])
 
-
 @app.route('/api/translate_history', methods=['GET'])
 def get_translate_history():
     if 'user_name' not in session:
@@ -300,7 +299,6 @@ def logout():
     return jsonify({'message': 'Logged out'})
 
 # Return user login status
-# Return user login status
 @app.route('/api/status', methods=['GET'])
 def status():
     if 'user_name' in session:
@@ -312,11 +310,10 @@ def status():
         return jsonify({
             'logged_in': True,
             'name': user.name,
-            'email': user.email   # <-- ADD THIS
+            'email': user.email
         })
 
     return jsonify({'logged_in': False})
-
 
 # Create database tables
 with app.app_context():

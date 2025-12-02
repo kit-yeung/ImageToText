@@ -158,7 +158,7 @@ function Home() {
               <img className='loading-icon' src={Load} alt="Loading..." />
               {image && (
                 <div className="image-preview-loading">
-                  <p>Processing image:</p>
+                  <p>Processing ...</p>
                   <img src={image} alt="Processing" className="loading-image" />
                 </div>
               )}
@@ -215,7 +215,6 @@ function Home() {
           </div>
           <div className='input-file'>
             <input
-          
               className='input_img'
               type='file'
               accept='image/*'

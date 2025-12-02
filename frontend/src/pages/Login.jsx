@@ -21,7 +21,7 @@ export default function Login() {
 		const data = await res.json();
 		if (res.ok) {
 			navigate('/');
-               toast.success("Logout in successfully!");
+               toast.success("Log in successfully!");
 		}
 		else {
 			setError(data.error || 'Login failed');
