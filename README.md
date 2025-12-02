@@ -81,5 +81,5 @@ npm run dev
 ```
 4. Browse http://localhost:5173
 
-## User Interface (Prototype)
-<img src="https://github.com/kit-yeung/ImageToText/blob/main/img/prototype.png">
+## User Interface
+<img src="https://github.com/kit-yeung/ImageToText/blob/main/img/ui.png">
