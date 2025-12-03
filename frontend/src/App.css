@@ -265,27 +265,6 @@ img {
 	border-radius: 5px;
 }
 
-.log-google .logbt {
-	background-color: grey;
-	text-align: center;
-	border-width: 3px;
-	margin-bottom: 20px;
-	width: 85%;
-	height: 40px;
-	border-radius: 5px;
-	margin-left: 60px;
-	/* Flexbox for centering content */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	/* Additional styling for the button content */
-	gap: 10px; /* Space between the icon and text */
-}
-
-.google-icon {
-	font-size: 20px; /* Adjust the size of the Google icon */
-}
-
 .signup .signbt {
 	font-weight: 400;
 	background-color: transparent;

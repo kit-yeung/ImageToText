@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FcGoogle } from "react-icons/fc";
 import { toast } from 'react-toastify';
 
 export default function Login() {
@@ -57,12 +56,6 @@ export default function Login() {
                     <br />
                     <div className="login">
                         <button className="logbt" type="submit">Login</button>
-                    </div>
-                    <div className="log-google"> 
-                        <button className="logbt" type="submit"> 
-                            <FcGoogle className="google-icon" />
-                            Log With Google
-                        </button> 
                     </div>
                     <div className="signup">
                         <span className="sign-txt">Don't Have an Account?</span>

@@ -46,11 +46,13 @@ export default function Navbar() {
             <div className="flex-1 font-semibold text-white">
                 DeepReadTranslate
             </div>
-            <div>
-                <button onClick={() => navigate('/')} className='text-center mr-[500px] bg-transparent text-white font-semibold border-2 border-solid border-white'>
-                    Home
-                </button>
-            </div>
+            {location.pathname !== '/' && (
+                <div>
+                    <button onClick={() => navigate('/')} className='text-center mr-[500px] bg-transparent text-white font-semibold border-2 border-solid border-white'>
+                        Home
+                    </button>
+                </div>
+            )}
             <div className="flex-none">
                 <div className="dropdown dropdown-end">
                     <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
