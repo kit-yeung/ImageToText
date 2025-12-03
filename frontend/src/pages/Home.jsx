@@ -273,6 +273,7 @@ function Home() {
         <div className="translation">
           <h2>Translate Text</h2>
           <form onSubmit={handleTranslate}>
+			<span classname='font-bold text-black text-[20px]'>Input Text</span>
             <label htmlFor="inputText">Input Text</label>
             <textarea
               id="inputText"
@@ -283,6 +284,7 @@ function Home() {
               className="textarea"
               required
             />
+			<span classname='font-bold text-black text-[20px]'>Output Language</span>
             <label htmlFor="languageSelect">Output Language</label>
             <select
               id="languageSelect"
@@ -302,7 +304,8 @@ function Home() {
                   </option>
                 ))}
             </select>
-            <label htmlFor="modelSelect">Translation Model</label>
+			<span classname='font-bold text-black text-[20px]'>Translation Model</span>
+            <label  htmlFor="modelSelect">Translation Model</label>
             <select
               id="modelSelect"
               value={translationModel}
