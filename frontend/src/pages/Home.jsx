@@ -205,7 +205,6 @@ function Home() {
           <h2>Extract Text from Image</h2>
           <div>
 				<span classname='font-bold text-black text-[20px]'>Input Type</span>
-            <label htmlFor="textTypeSelect">Input Type</label>
             <select
               id="textTypeSelect"
               value={selectedTextType}
@@ -221,7 +220,6 @@ function Home() {
           </div>
           <div>
 			<span classname='font-bold text-black text-[20px]'>Input Language</span>
-            <label htmlFor="inputLanguageSelect">Input Language</label>
             <select
               id="inputLanguageSelect"
               value={inputLanguage}
@@ -237,7 +235,6 @@ function Home() {
           </div>
           <div>
 			<span classname='font-bold text-black text-[20px]'>Line Separation</span>
-            <label htmlFor="lineSeparationSelect">Line Separation</label>
             <select
               id="lineSeparationSelect"
               value={lineSeparation}
@@ -274,7 +271,6 @@ function Home() {
           <h2>Translate Text</h2>
           <form onSubmit={handleTranslate}>
 			<span classname='font-bold text-black text-[20px]'>Input Text</span>
-            <label htmlFor="inputText">Input Text</label>
             <textarea
               id="inputText"
               value={text}
@@ -285,7 +281,6 @@ function Home() {
               required
             />
 			<span classname='font-bold text-black text-[20px]'>Output Language</span>
-            <label htmlFor="languageSelect">Output Language</label>
             <select
               id="languageSelect"
               value={language}
@@ -305,7 +300,6 @@ function Home() {
                 ))}
             </select>
 			<span classname='font-bold text-black text-[20px]'>Translation Model</span>
-            <label  htmlFor="modelSelect">Translation Model</label>
             <select
               id="modelSelect"
               value={translationModel}
