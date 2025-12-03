@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, session, send_file
 from flask_cors import CORS
 from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash, check_password_hash
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel, M2M100ForConditionalGeneration, M2M100Tokenizer
 from PIL import Image
 import numpy as np
@@ -42,6 +43,12 @@ handwritten_model.to(device)
 nmt_model = M2M100ForConditionalGeneration.from_pretrained('facebook/m2m100_418M')
 nmt_tokenizer = M2M100Tokenizer.from_pretrained('facebook/m2m100_418M')
 nmt_model.to(device)
+
+def set_password(self, password):
+    self.password_hash = generate_password_hash(password)
+
+def check_password(self, password):
+    return check_password_hash(self.password_hash, password)
 
 def preprocess_image(image, line_separation='auto'):
     img_array = np.array(image)
@@ -274,7 +281,7 @@ def login():
     password = data.get('password')
     user = db.session.get(Users, name)
     # Log in if name and password match in database
-    if user and user.check_password(password):
+    if user and check_password(user, password):
         session['user_name'] = user.name
         return jsonify({'message': 'Logged in', 'name': user.name})
     return jsonify({'error': 'Invalid credentials'}), 401
@@ -289,7 +296,7 @@ def signup():
     if db.session.get(Users, name):
         return jsonify({'error': 'Name already used'}), 400
     user = Users(name=name, email=email)
-    user.set_password(password)
+    set_password(user, password)
     db.session.add(user)
     db.session.commit()
     return jsonify({'message': 'Signed up'})

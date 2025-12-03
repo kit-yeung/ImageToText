@@ -1,7 +1,12 @@
 import requests
 
 def llm_translate(text, language_code):
-    lang_map = {'en': 'English', 'fr': 'French'}
+    lang_map = {
+        'en': 'English',
+        'es': 'Spanish',
+		'fr': 'French',
+		'de': 'German',
+    }
     target_lang = lang_map.get(language_code, 'English')
     
     system_prompt = (
