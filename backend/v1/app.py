@@ -28,8 +28,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize database
 db.init_app(app)
 
-LANGUAGES = ['en', 'fr']
-reader = easyocr.Reader(LANGUAGES, gpu=torch.cuda.is_available())
+OCR_LANG = ['en', 'es' ,'fr', 'de']
+TRANSLATE_LANG = ['en', 'es', 'fr', 'de']
+reader = easyocr.Reader(OCR_LANG, gpu=torch.cuda.is_available())
 
 # Load TrOCR handwritten model
 handwritten_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten', use_fast=True)
@@ -98,7 +99,7 @@ def detect_language(text):
         _, _, spec = pycld2.detect(text)
         # Use language with highest confidence
         lang = spec[0][1]
-        return lang if lang in LANGUAGES else 'en'
+        return lang if lang in TRANSLATE_LANG else 'en'
     except:
         return 'en'
 
@@ -196,7 +197,7 @@ def translate_text():
         return jsonify({'error': 'Invalid input'}), 400
     # Determine input language
     detected_language = input_language if input_language != 'auto' else detect_language(text)
-    if detected_language not in LANGUAGES:
+    if detected_language not in TRANSLATE_LANG:
         return jsonify({'error': f'Unsupported language: {detected_language}'}), 400
     # Return original text if input and output languages are the same
     if detected_language == language_code:

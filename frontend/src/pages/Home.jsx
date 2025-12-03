@@ -47,10 +47,19 @@ function Home() {
 	const [uploaded, setUploaded] = useState(false);
 	const [error, setError] = useState(null);
 	
-	const languageMap = {
+	const ocrLangMap = {
 		'auto': 'auto',
 		'en': 'English',
+		'es': 'Spanish',
 		'fr': 'French',
+		'de': 'German',
+	};
+	const translateLangMap = {
+		'auto': 'auto',
+		'en': 'English',
+		'es': 'Spanish',
+		'fr': 'French',
+		'de': 'German',
 	};
 	
 	const textTypeOptions = ['auto', 'printed', 'handwritten'];
@@ -79,7 +88,7 @@ function Home() {
 				if (data.extracted_text) {
 					setText(data.extracted_text);
 					setTextType(data.text_type);
-					setLanguageOut(languageMap[data.detected_language] || 'Unknown');
+					setLanguageOut(ocrLangMap[data.detected_language] || 'Unknown');
 					setUploaded(true);
 				}
 				else {
@@ -105,7 +114,7 @@ function Home() {
 		}
 		try {
 			// Convert selected language to code
-			const languageCode = Object.keys(languageMap).find(key => languageMap[key] === language);
+			const languageCode = Object.keys(translateLangMap).find(key => translateLangMap[key] === language);
 			// // Split long text into parts for machine translation
 			const parts = translationModel === 'llm' ? [text] : splitText(text);
 			let translations = [];
@@ -127,8 +136,8 @@ function Home() {
 					throw new Error(data.error || 'Translation failed');
 				}
 				translations.push(data.translated_text);
-				if (data.detected_language && languageIn !== (languageMap[data.detected_language] || 'Unknown')) {
-					setLanguageIn(languageMap[data.detected_language] || 'Unknown');
+				if (data.detected_language && languageIn !== (translateLangMap[data.detected_language] || 'Unknown')) {
+					setLanguageIn(translateLangMap[data.detected_language] || 'Unknown');
 				}
 			}
 			// Join translated parts
@@ -195,8 +204,8 @@ function Home() {
               onChange={(e) => setInputLanguage(e.target.value)}
               className='select'
             >
-              {Object.keys(languageMap).map((key) => (
-                <option key={key} value={key}>{languageMap[key]}</option>
+              {Object.keys(ocrLangMap).map((key) => (
+                <option key={key} value={key}>{ocrLangMap[key]}</option>
               ))}
             </select>
           </div>
@@ -253,7 +262,7 @@ function Home() {
               required
             >
               <option value='' disabled>Select language</option>
-              {Object.values(languageMap).filter(lang => lang !== 'auto').map((lang) => (
+              {Object.values(translateLangMap).filter(lang => lang !== 'auto').map((lang) => (
                 <option key={lang} value={lang}>{lang}</option>
               ))}
             </select>
