@@ -3,21 +3,20 @@ flask==2.3.3
 flask-cors==4.0.0
 flask-bcrypt==1.0.1
 flask-jwt-extended==4.5.3
-gunicorn==21.2.0
 
 # PyTorch
-torch==1.11.0
-torchvision==0.12.0
+torch==1.13.1
+torchvision==0.14.1
 
 # NLP + OCR Models
 transformers==4.38.0
 sentencepiece==0.1.99
 tokenizers==0.15.1
 accelerate==0.28.0
-easyocr==1.6.2
+easyocr==1.7.2
 
 # CRAFT Text Detection
-craft-text-detector==0.3.4
+craft-text-detector==0.4.3
 
 # Image Processing
 Pillow==9.5.0
@@ -29,3 +28,6 @@ numpy==1.26.4
 
 # Dataset Loader
 datasets==2.18.0
+
+# Render deployment
+gunicorn==21.2.0
