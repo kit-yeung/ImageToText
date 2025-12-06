@@ -314,14 +314,28 @@ def status():
         if user is None:
             session.clear()
             return jsonify({'logged_in': False})
-        
         return jsonify({
             'logged_in': True,
             'name': user.name,
             'email': user.email
         })
-
     return jsonify({'logged_in': False})
+
+@app.route('/api/password', methods=['POST'])
+def change_password():
+    if 'user_name' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.get_json()
+    old_password = data.get('oldPassword')
+    new_password = data.get('newPassword')
+    user = db.session.get(Users, session['user_name'])
+    # Check if current password match database record
+    if not user or not check_password_hash(user.password_hash, old_password):
+        return jsonify({'error': 'Incorrect current password'}), 400
+    # Update password in database
+    user.password_hash = generate_password_hash(new_password)
+    db.session.commit()
+    return jsonify({'message': 'Password updated successfully'}), 200
 
 # Create database tables
 with app.app_context():

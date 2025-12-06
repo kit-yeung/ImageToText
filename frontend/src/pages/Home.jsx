@@ -25,21 +25,21 @@ function Home() {
 	const fileInputRef = useRef(null);
 	
 	const ocrLangMap = {
-	auto: 'Auto',
-	en: 'English',
-	es: 'Spanish',
-	fr: 'French',
-	de: 'German',
-	it: 'Italian',
-	pt: 'Portuguese',
-	nl: 'Dutch',
-	pl: 'Polish',
-	tr: 'Turkish',
-	sv: 'Swedish',
-	da: 'Danish',
-	no: 'Norwegian'
+		auto: 'Auto',
+		en: 'English',
+		es: 'Spanish',
+		fr: 'French',
+		de: 'German',
+		it: 'Italian',
+		pt: 'Portuguese',
+		nl: 'Dutch',
+		pl: 'Polish',
+		tr: 'Turkish',
+		sv: 'Swedish',
+		da: 'Danish',
+		no: 'Norwegian',
 	};
-
+	
 	const translateLangMap = {
 		en: 'English',
 		es: 'Spanish',
@@ -52,7 +52,7 @@ function Home() {
 		tr: 'Turkish',
 		sv: 'Swedish',
 		da: 'Danish',
-		no: 'Norwegian'
+		no: 'Norwegian',
 	};
 	
 	const handleImage = async (e) => {
