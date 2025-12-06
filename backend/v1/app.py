@@ -29,8 +29,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize database
 db.init_app(app)
 
-OCR_LANG = ['en', 'es' ,'fr', 'de']
-TRANSLATE_LANG = ['en', 'es', 'fr', 'de']
+OCR_LANG = ['en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'pl', 'tr', 'sv', 'da', 'no']
+TRANSLATE_LANG = ['en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'pl', 'tr', 'sv', 'da', 'no']
 reader = easyocr.Reader(OCR_LANG, gpu=torch.cuda.is_available())
 
 # Load TrOCR handwritten model

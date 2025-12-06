@@ -10,7 +10,15 @@ export default function TranslateHistory() {
 		en: 'English',
 		es: 'Spanish',
 		fr: 'French',
-		de: 'German'
+		de: 'German',
+		it: 'Italian',
+		pt: 'Portuguese',
+		nl: 'Dutch',
+		pl: 'Polish',
+		tr: 'Turkish',
+		sv: 'Swedish',
+		da: 'Danish',
+		no: 'Norwegian',
 	};
 	
 	useEffect(() => {
