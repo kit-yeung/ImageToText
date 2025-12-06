@@ -121,7 +121,6 @@ def status():
     return jsonify({'logged_in': False}), 200
 
 
-
 @app.route('/api/extract', methods=['POST'])
 @jwt_required(optional=True)
 def detect_extract():
@@ -142,7 +141,7 @@ def detect_extract():
     path = os.path.join(UPLOAD_DIR, filename)
     file.save(path)
 
-    # 1. Detect + Crop
+    # Detect + Crop
     crop_paths = detect_and_crop(path, out_dir=CROP_DIR)
 
     if input_language == "auto":
@@ -150,35 +149,19 @@ def detect_extract():
     if text_type == "auto":
         text_type = detect_text_type_auto(crop_paths)
 
-    # 2. EasyOCR
-    easyocr_results = {}
-    reader = easyocr.Reader(["en", input_language], gpu=False)
-    for p in crop_paths:
-        result = reader.readtext(p, detail=0)
-        easyocr_results[p] = " ".join(result)
-
-    # 3. TrOCR
-    trocr_results = {}
-    for p in crop_paths:
-        trocr_results[p] = run_trocr(p)
-
-    easyocr_full_text = " ".join(easyocr_results.values())
-    trocr_full_text = " ".join(trocr_results.values())
-
-    # 4. Compute CER / WER only if ground_truth is provided
-    ground_truth = request.form.get('ground_truth', None)
-    metrics = {}
-    extracted_text = None
-    if ground_truth:
-        cer_metric = load_metric("cer")
-        wer_metric = load_metric("wer")
-        metrics['easyocr_cer'] = cer_metric.compute(predictions=[easyocr_full_text], references=[ground_truth])
-        metrics['easyocr_wer'] = wer_metric.compute(predictions=[easyocr_full_text], references=[ground_truth]) 
-        metrics['trocr_cer'] = cer_metric.compute(predictions=[trocr_full_text], references=[ground_truth])
-        metrics['trocr_wer'] = wer_metric.compute(predictions=[trocr_full_text], references=[ground_truth])
-        extracted_text = trocr_full_text if metrics['easyocr_cer'] > metrics['trocr_cer'] else easyocr_full_text
+    # Run OCR based on text type
+    if text_type == 'handwritten':
+        trocr_results = {}
+        for p in crop_paths:
+            trocr_results[p] = run_trocr(p)
+        extracted_text = "\n".join(trocr_results.values())
     else:
-        extracted_text = trocr_full_text if input_language == 'en' and text_type == 'handwritten' else easyocr_full_text
+        easyocr_results = {}
+        reader = easyocr.Reader(["en", input_language], gpu=False)
+        for p in crop_paths:
+            result = reader.readtext(p, detail=0)
+            easyocr_results[p] = " ".join(result)
+        extracted_text = "\n".join(easyocr_results.values())
 
     # Save extraction history into SQLite for authenticated users
     current_user_id = get_jwt_identity()
@@ -206,10 +189,7 @@ def detect_extract():
     return jsonify({
         "extracted_text": extracted_text,
         'text_type': text_type,
-        'detected_language': input_language,
-        "metrics": metrics,
-        "easyocr": easyocr_results,
-        "trocr": trocr_results 
+        'detected_language': input_language
     })
 
 
