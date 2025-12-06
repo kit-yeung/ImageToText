@@ -15,6 +15,7 @@ function Home() {
 	const [showDetectionInfo, setShowDetectionInfo] = useState(false);
 	// For translation
 	const [translation, setTranslation] = useState('');
+	const [inputLangTranslate, setInputLangTranslate] = useState('auto');
 	const [detectLangTranslate, setDetectLangTranslate] = useState('');
 	const [translateLang, setTranslateLang] = useState('English');
 	const [translateModel, setTranslateModel] = useState('nmt');
@@ -25,7 +26,6 @@ function Home() {
 	const fileInputRef = useRef(null);
 	
 	const ocrLangMap = {
-		auto: 'Auto',
 		en: 'English',
 		es: 'Spanish',
 		fr: 'French',
@@ -87,6 +87,7 @@ function Home() {
 				setText(data.extracted_text);
 				setTextType(data.text_type || 'Unknown');
 				setDetectLangExtract(ocrLangMap[data.detected_language] || data.detected_language || 'Unknown');
+				setInputLangTranslate(data.detected_language);
 				setShowDetectionInfo(true);
 			}
 			else {
@@ -111,7 +112,7 @@ function Home() {
 		setError('');
 		setTranslation('');
 		// Convert selected language to code
-		const langCode = Object.keys(translateLangMap).find(k => translateLangMap[k] === translateLang);
+		const langCode = Object.keys(translateLangMap).find(key => translateLangMap[key] === translateLang);
 		// Split long text into parts for machine translation
 		const parts = splitText(text);
 		try {
@@ -124,7 +125,7 @@ function Home() {
 					body: JSON.stringify({
 						text: parts[i],
 						language: langCode,
-						input_language: inputLangExtract,
+						input_language: inputLangTranslate,
 						translation_model: translateModel
 					}),
 				});
@@ -174,6 +175,7 @@ function Home() {
 		setSelectTextType('auto');
 		setInputLangExtract('auto');
 		setLineSeparation('auto');
+		setInputLangTranslate('auto');
 		setTranslateLang('English');
 		setTranslateModel('nmt');
 		// Reset the file input field
@@ -201,8 +203,8 @@ function Home() {
 					<label className='select-label'>Input Language</label>
 					<select value={inputLangExtract} onChange={e => setInputLangExtract(e.target.value)} className='select'>
 						<option value='auto'>Auto</option>
-						{Object.entries(ocrLangMap).map(([k, v]) => (
-							<option key={k} value={k}>{v}</option>
+						{Object.entries(ocrLangMap).map(([code, name]) => (
+							<option key={code} value={code}>{name}</option>
 						))}
 					</select>
 				</div>
@@ -256,6 +258,18 @@ function Home() {
 							className='textarea'
 							rows='8'
 						/>
+						
+						<label className='select-label'>Input Language</label>
+						<select 
+							value={inputLangTranslate} 
+							onChange={e => setInputLangTranslate(e.target.value)} 
+							className='select'
+						>
+							<option value='auto'>Auto</option>
+							{Object.entries(translateLangMap).map(([code, name]) => (
+								<option key={code} value={code}>{name}</option>
+							))}
+						</select>
 						
 						<label className='select-label'>Output Language</label>
 						<select
