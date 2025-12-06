@@ -1,95 +1,81 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import API_BASE_URL from "../config/api";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import API_BASE_URL from '../config/api';
+
 export default function Signup() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError("");
-        const res = await fetch(`${API_BASE_URL}/api/signup`, {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-            navigate("/login");
-            toast.success("Sign up successfully!");
-        } else {
-            setError(data.error || "Signup failed");
-        }
-    };
-
-    return (
-        <div className="signup-container">
-            <div className="btn-hide">
-                <button
-                    className="hiddenbutton text-white"
-                    onClick={() => navigate("/")}
-                >
-                    ImageToText
-                </button>
-            </div>
-            <div className="fillform">
-                <h1 className="text-[20px]">Sign Up</h1>
-
-                {error && <p className="error">{error}</p>}
-
-                <form onSubmit={handleSubmit}>
-                    <input
-                        className="nam"
-                        type="text"
-                        placeholder="Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-
-                    <input
-                        className="email"
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-
-                    <input
-                        className="pass"
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-
-                    <div className="login">
-                        <button className="logbt" type="submit">
-                            Sign Up
-                        </button>
-                    </div>
-
-                    <div className="signup">
-                        <span className="sign-txt text-black font-semibold">
-                            Already Have An Account?
-                        </span>
-                        <button
-                            className="signbt"
-                            type="button"
-                            onClick={() => navigate("/login")}
-                        >
-                            Log in
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+	const [name, setName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
+	const navigate = useNavigate();
+	
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setError('');
+		try {
+			const res = await fetch(`${API_BASE_URL}/api/signup`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					name,
+					email,
+					password
+				}),
+			});
+			const data = await res.json();
+			if (res.ok) {
+				toast.success('Account created! Please log in.');
+			navigate('/login');
+			}
+			else {
+				setError(data.error || 'Signup failed');
+			}
+		}
+		catch (err) {
+			setError('Network error');
+		}
+	};
+	
+	return (
+		<div className='auth-container'>
+			<div className='auth-card'>
+				<h1>Sign Up</h1>
+				{error && <div className='error'>{error}</div>}
+				<form onSubmit={handleSubmit}>
+					<input
+						type='text'
+						placeholder='Username'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						required
+					/>
+					<input
+						type='email'
+						placeholder='Email'
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						required
+					/>
+					<input
+						type='password'
+						placeholder='Password'
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						required
+					/>
+					<button type='submit' className='button'>
+						Sign Up
+					</button>
+				</form>
+				<p style={{ marginTop: '1.5rem' }}>
+					Already have an account?{' '}
+					<span className='auth-link' onClick={() => navigate('/login')}>
+						Log In
+					</span>
+				</p>
+			</div>
+		</div>
+	);
 }

@@ -1,25 +1,27 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ExtractHistory from './pages/ExtractHistory';
 import TranslateHistory from './pages/TranslateHistory';
+import Profile from './pages/Profile';
+
 import RedirectUser from './components/RedirectUser';
 import RedirectGuest from './components/RedirectGuest';
-import './App.css';
 import Navbar from './components/Navbar';
-import Profile from './pages/Profile';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
+import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 	return (
 		<BrowserRouter>
-		<Navbar/>
+		<Navbar />
 			<ToastContainer
-				position="top-center"
+				position='top-center'
 				autoClose={60}
 				hideProgressBar={false}
 				newestOnTop={false}
@@ -28,7 +30,7 @@ function App() {
 				pauseOnFocusLoss
 				draggable
 				pauseOnHover
-				theme="colored"
+				theme='colored'
 			/>
 			<Routes>
 				<Route path='/' element={<Home />} />
@@ -52,11 +54,7 @@ function App() {
 							<Signup />
 						</RedirectUser>
 				} />
-				<Route
-				path='/profile'
-				element={
-				<Profile/>
-				}/>
+				<Route path='/profile' element={<Profile />}/>
 			</Routes>
 		</BrowserRouter>
 	);
