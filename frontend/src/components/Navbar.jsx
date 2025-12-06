@@ -1,41 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import icon from '../assets/user.png'; // User icon
-import { useNavigate,useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import icon from "../assets/user.png"; // User icon
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { NavLink } from "react-router-dom";
+import API_BASE_URL from "../config/api";
 
 export default function Navbar() {
     const [loggedIn, setLoggedIn] = useState(false);
-    const [name, setName] = useState('');
+    const [name, setName] = useState("");
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const checkAuth = async () => {
-        const res = await fetch('http://localhost:5000/api/status', {
-            credentials: 'include',
+        const res = await fetch(`${API_BASE_URL}/api/status`, {
+            credentials: "include",
         });
         const data = await res.json();
         setLoggedIn(data.logged_in);
-        if (data.logged_in)
-            setName(data.name);
-        else
-            setName('');
+        if (data.logged_in) setName(data.name);
+        else setName("");
     };
-    
+
     const logout = async () => {
-        await fetch('http://localhost:5000/api/logout', {
-            method: 'POST',
-            credentials: 'include',
+        await fetch(`${API_BASE_URL}/api/logout`, {
+            method: "POST",
+            credentials: "include",
         });
         setLoggedIn(false);
-        setName('');
+        setName("");
         toast.success("Logout successfully!");
         checkAuth();
     };
 
     const capitalize = (str) =>
-        str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : '';
+        str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
     useEffect(() => {
         checkAuth();
@@ -46,39 +45,70 @@ export default function Navbar() {
             <div className="flex-1 font-semibold text-white">
                 DeepReadTranslate
             </div>
-            {location.pathname !== '/' && (
+            {location.pathname !== "/" && (
                 <div>
-                    <button onClick={() => navigate('/')} className='text-center mr-[500px] bg-transparent text-white font-semibold border-2 border-solid border-white'>
+                    <button
+                        onClick={() => navigate("/")}
+                        className="text-center mr-[500px] bg-transparent text-white font-semibold border-2 border-solid border-white"
+                    >
                         Home
                     </button>
                 </div>
             )}
             <div className="flex-none">
                 <div className="dropdown dropdown-end">
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn btn-ghost btn-circle avatar"
+                    >
                         <div className="w-10 rounded-full">
-                            <img className="w-7 h-7 mt-2 mx-2" alt="User Avatar" src={icon} />
+                            <img
+                                className="w-7 h-7 mt-2 mx-2"
+                                alt="User Avatar"
+                                src={icon}
+                            />
                         </div>
                     </div>
                     {loggedIn ? (
                         <ul
                             tabIndex="-1"
-                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                        >
                             <li>
-                             <NavLink to='/profile' className="justify-between">
-                                {capitalize(name)}
-                            <span className="badge">New</span>
+                                <NavLink
+                                    to="/profile"
+                                    className="justify-between"
+                                >
+                                    {capitalize(name)}
+                                    <span className="badge">New</span>
                                 </NavLink>
                             </li>
-                            <li><NavLink to='/extract-history' >Extraction History</NavLink></li>
-                            <li><NavLink to='/translate-history'> Translation History</NavLink></li>
-                            <li ><NavLink to='/' onClick={logout}>Logout</NavLink></li>
+                            <li>
+                                <NavLink to="/extract-history">
+                                    Extraction History
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/translate-history">
+                                    {" "}
+                                    Translation History
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/" onClick={logout}>
+                                    Logout
+                                </NavLink>
+                            </li>
                         </ul>
                     ) : (
                         <ul
                             tabIndex="-1"
-                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                            <li><a onClick={() => navigate('/login')}>Log In</a></li>
+                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+                        >
+                            <li>
+                                <a onClick={() => navigate("/login")}>Log In</a>
+                            </li>
                         </ul>
                     )}
                 </div>
