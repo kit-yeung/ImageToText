@@ -49,7 +49,7 @@ def load_split_file(path):
         return [line.strip() for line in f if line.strip()]
 
 # Define paths
-data_dir = './data/RIMES-2011-Lines'
+data_dir = '../../../backend/v1/data/RIMES-2011-Lines'
 img_dir = os.path.join(data_dir, 'Images')
 txt_dir = os.path.join(data_dir, 'Transcriptions')
 split_dir = os.path.join(data_dir, 'Sets')
@@ -104,7 +104,7 @@ model.generation_config = gen_config
 
 # Define training arguments
 training_args = Seq2SeqTrainingArguments(
-    output_dir='./trocr-rimes',
+    output_dir='../../../backend/v1/data/trocr-fr-handwritten',
     predict_with_generate=True,
     eval_strategy='steps',
     eval_steps=250,

@@ -34,10 +34,21 @@ TRANSLATE_LANG = ['en', 'es', 'fr', 'de', 'it', 'pt', 'nl', 'pl', 'tr', 'sv', 'd
 reader = easyocr.Reader(OCR_LANG, gpu=torch.cuda.is_available())
 
 # Load TrOCR handwritten model
-handwritten_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten', use_fast=True)
-handwritten_model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
+en_handwritten_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten', use_fast=True)
+en_handwritten_model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-handwritten_model.to(device)
+en_handwritten_model.to(device)
+
+
+# Load fine-tuned TrOCR model if exist
+fr_handwritten_processor = en_handwritten_processor
+fr_handwritten_model = en_handwritten_model
+finetune_dir = 'data/trocr-fr-handwritten'
+if os.path.exists(finetune_dir):
+    fr_handwritten_processor = TrOCRProcessor.from_pretrained(finetune_dir, use_fast=True)
+    fr_handwritten_model = VisionEncoderDecoderModel.from_pretrained(finetune_dir)
+    print('Fine-tuned TrOCR model loaded.')
+fr_handwritten_model.to(device)
 
 # Load M2M100 model and tokenizer
 nmt_model = M2M100ForConditionalGeneration.from_pretrained('facebook/m2m100_418M')
@@ -146,8 +157,14 @@ def extract_image_text():
     line_separation = request.form.get('line_separation', 'auto')
     image = Image.open(file).convert('RGB')
     printed_text, img_lines, confidences = preprocess_image(image, line_separation)
-    # Process handwritten text if needed
+    # Use fine-tuned handwritten model if requested
     handwritten_texts = []
+    handwritten_processor = en_handwritten_processor
+    handwritten_model = en_handwritten_model
+    if input_language == 'fr':
+        handwritten_processor = fr_handwritten_processor
+        handwritten_model = fr_handwritten_model
+    # Process handwritten text if needed
     if text_type in ['auto', 'handwritten'] and img_lines:
         for img_line in img_lines:
             img_line = img_line.resize((384, 384))

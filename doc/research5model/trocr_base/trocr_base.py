@@ -47,7 +47,7 @@ def load_split_file(path):
         return [line.strip() for line in f if line.strip()]
 
 # Define paths
-data_dir = './data/RIMES-2011-Lines'
+data_dir = '../../../backend/v1/data/RIMES-2011-Lines'
 img_dir = os.path.join(data_dir, 'Images')
 txt_dir = os.path.join(data_dir, 'Transcriptions')
 split_dir = os.path.join(data_dir, 'Sets')

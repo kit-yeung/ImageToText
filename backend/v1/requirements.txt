@@ -12,7 +12,11 @@ opencv-python-headless
 easyocr
 sentencepiece
 pycld2
+
+# for postgresql
 psycopg2-binary
+
+# for fine-tune trocr
 datasets
 evaluate
 accelerate
