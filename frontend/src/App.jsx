@@ -22,7 +22,7 @@ function App() {
 		<Navbar />
 			<ToastContainer
 				position='top-center'
-				autoClose={60}
+				autoClose={250}
 				hideProgressBar={false}
 				newestOnTop={false}
 				closeOnClick
