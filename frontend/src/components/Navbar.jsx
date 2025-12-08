@@ -28,9 +28,9 @@ export default function Navbar() {
 			credentials: 'include',
 		});
 		setLoggedIn(false);
-		setName('');
 		toast.success('Logout successfully!');
 		checkAuth();
+		navigate('/login');
 	};
 	
 	useEffect(() => {
