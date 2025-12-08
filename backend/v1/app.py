@@ -179,7 +179,7 @@ def extract_image_text():
     if text_type == 'auto':
         # Use EasyOCR for printed text and TrOCR for handwritten text
         avg_confidence = np.mean(confidences) if confidences else 0
-        is_handwritten = avg_confidence < 0.8 and handwritten_result.strip() != ''
+        is_handwritten = avg_confidence < 0.7 and handwritten_result.strip() != ''
         extracted_text = handwritten_result if is_handwritten else printed_result
         text_type_detected = 'Handwritten' if is_handwritten else 'Printed'
     else:

@@ -210,7 +210,7 @@ function Home() {
 				</div>
 				
 				<div className='form-group'>
-					<label className='select-label'>Crop Handwriting by Line</label>
+					<label className='select-label'>Crop Text by Line</label>
 					<select value={lineSeparation} onChange={e => setLineSeparation(e.target.value)} className='select'>
 						<option value='auto'>On</option>
 						<option value='no'>Off</option>
