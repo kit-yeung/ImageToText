@@ -184,36 +184,45 @@ def detect_and_crop(input_image_path, out_dir="crops", min_area=100):
     return crop_paths
 
 
-def sort_into_lines(boxes, y_threshold=15):
+def box_stats(box):
+    ys = box[:, 1]
+    y_min = float(np.min(ys))
+    y_max = float(np.max(ys))
+    y_center = (y_min + y_max) / 2
+    height = y_max - y_min
+    return y_center, height
+
+
+def sort_into_lines(boxes, line_overlap_ratio=0.5):
     """
-    Group boxes into lines based on Y coordinate closeness.
+    Group boxes into lines using vertical center & adaptive threshold
     """
-    # Compute (y_min, x_min) for each box
     info = []
     for b in boxes:
-        ys = b[:, 1]
         xs = b[:, 0]
-        info.append((b, float(np.min(ys)), float(np.min(xs))))
+        y_center, height = box_stats(b)
+        x_min = float(np.min(xs))
+        info.append((b, y_center, height, x_min))
 
-    # Initially sort by y
+    # Sort by vertical center
     info.sort(key=lambda x: x[1])
     lines = []
     current_line = [info[0]]
     for item in info[1:]:
-        _, y, _ = item
-        _, last_y, _ = current_line[-1]
-        # Consider close y values as same row
-        if abs(y - last_y) < y_threshold:
+        _, y_c, h, _ = item
+        _, last_y, last_h, _ = current_line[-1]
+        threshold = line_overlap_ratio * max(h, last_h)
+        if abs(y_c - last_y) < threshold:
             current_line.append(item)
         else:
             lines.append(current_line)
             current_line = [item]
     lines.append(current_line)
 
-    # Sort by x within each row
+    # sort inside each line by x
     sorted_boxes = []
     for line in lines:
-        line_sorted = sorted(line, key=lambda x: x[2])
-        sorted_boxes.extend([b for (b, _, _) in line_sorted])
+        line_sorted = sorted(line, key=lambda x: x[3])
+        sorted_boxes.extend([b for (b, _, _, _) in line_sorted])
 
     return sorted_boxes

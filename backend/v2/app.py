@@ -211,6 +211,11 @@ def translate():
     if not tgt_lang:
         return jsonify({"error": "tgt_lang is required"}), 400
 
+    if(src_lang == tgt_lang):
+        return jsonify({
+            "translated_text": text
+        })
+
     try:
         print(f"text:{text},src_lang:{src_lang},tgt_lang:{tgt_lang}")
         translated = translate_text(text, src_lang, tgt_lang)

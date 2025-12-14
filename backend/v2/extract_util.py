@@ -45,7 +45,7 @@ def detect_language_auto(crop_path):
     best_score = -1
     for lang in EASYOCR_SUPPORTED_LANGS:
         try:
-            reader = easyocr.Reader(["en", lang], gpu=False)
+            reader = easyocr.Reader([lang], gpu=False)
             result = reader.readtext(crop_path[0], detail=1)
             if not result:
                 continue
@@ -63,47 +63,58 @@ def detect_language_auto(crop_path):
 
 def detect_text_type_auto(crop_paths):
     """
-    Analyzes image crops to automatically classify the text type as 'printed' or 'handwritten'.
+    Classifies text crops as 'printed' or 'handwritten' using three image-based features:
+    average edge strength, Laplacian variance, and gradient magnitude energy
     """
+    total_handwritten_score = 0
+    total_printed_score = 0
     for p in crop_paths:
         img = cv2.imread(p, cv2.IMREAD_GRAYSCALE)
         if img is None:
             continue
 
-        # Noise removal
+        # Feature 1: Average edge strength via Sobel
+        # Printed: sharp, uniform edges; Handwritten: softer, irregular edges
         blur = cv2.GaussianBlur(img, (3, 3), 0)
-
-        # Sobel edge detection
         sobel_x = cv2.Sobel(blur, cv2.CV_64F, 1, 0, ksize=3)
         sobel_y = cv2.Sobel(blur, cv2.CV_64F, 0, 1, ksize=3)
         sobel_mag = np.sqrt(sobel_x**2 + sobel_y**2)
-        # Edge strength mean
         edge_mean = np.mean(sobel_mag)
-        # Edge direction variance
-        edge_var = np.var(np.arctan2(sobel_y, sobel_x))
 
-        # Number of connected components
-        _, bw = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        num_labels, _ = cv2.connectedComponents(bw)
+        # Feature 2: Laplacian variance (stroke irregularity)
+        # Printed: high contrast boundaries; Handwritten: smooth transitions
+        lap = cv2.Laplacian(img, cv2.CV_64F)
+        lap_var = lap.var()
 
-        # printed: strong edges + fewer connected components + low direction variance
-        # handwritten: weak edges + more connected components + high direction variance
+        # Feature 3: Gradient magnitude energy
+        # Printed: steep intensity changes at boundaries; Handwritten: gradual strokes
+        gx = cv2.Sobel(img, cv2.CV_32F, 1, 0)
+        gy = cv2.Sobel(img, cv2.CV_32F, 0, 1)
+        mag = cv2.magnitude(gx, gy)
+        grad_energy = np.mean(mag)
+ 
+        # Score based on empirical thresholds
         handwritten_score = 0
         printed_score = 0
 
-        if edge_mean > 40:
+        if edge_mean > 108:
             printed_score += 1
         else:
             handwritten_score += 1
 
-        if num_labels < 120:
+        if lap_var > 1800:
             printed_score += 1
         else:
             handwritten_score += 1
 
-        if edge_var < 0.5:
+        if grad_energy > 165:
             printed_score += 1
         else:
             handwritten_score += 1
+        
+        if printed_score > handwritten_score:
+            total_printed_score += 1  
+        else:
+            total_handwritten_score += 1
 
-    return "printed" if printed_score >= handwritten_score else "handwritten"
+    return "printed" if total_printed_score >= total_handwritten_score else "handwritten"
