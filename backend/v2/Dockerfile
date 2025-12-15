@@ -28,8 +28,9 @@ WORKDIR /app
 # Python dependencies
 # ===============================
 COPY requirements.txt .
-RUN pip install --upgrade pip \
- && pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python || true && \
+    pip install --no-cache-dir -r requirements.txt
 
 # ===============================
 # Copy backend code
@@ -50,4 +51,4 @@ EXPOSE 8080
 # ===============================
 # Production server (IMPORTANT)
 # ===============================
-CMD ["gunicorn", "--bind", ":8080", "--workers", "2", "--threads", "4", "app:app"]
+CMD ["gunicorn", "--bind", ":8080", "--workers", "1", "--threads", "4", "app:app"]
