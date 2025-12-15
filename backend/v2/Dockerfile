@@ -28,9 +28,12 @@ WORKDIR /app
 # Python dependencies
 # ===============================
 COPY requirements.txt .
+
 RUN pip install --upgrade pip && \
-    pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python || true && \
     pip install --no-cache-dir -r requirements.txt
+
+RUN pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python || true && \
+    pip install --no-cache-dir opencv-contrib-python==4.7.0.72
 
 # ===============================
 # Copy backend code
