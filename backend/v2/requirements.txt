@@ -14,6 +14,7 @@ sentencepiece==0.1.99
 tokenizers==0.15.1
 accelerate==0.28.0
 easyocr==1.7.2
+langdetect==1.0.9
 
 # CRAFT Text Detection
 craft-text-detector==0.4.3
@@ -26,8 +27,5 @@ opencv-contrib-python==4.7.0.72
 jiwer==3.0.3
 numpy==1.26.4
 
-# Dataset Loader
-datasets==2.18.0
-
-# Render deployment
+# Deployment
 gunicorn==21.2.0

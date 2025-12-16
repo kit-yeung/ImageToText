@@ -17,8 +17,8 @@ from flask_jwt_extended import (
 from database import get_db
 import sqlite3
 from detect_and_crop import detect_and_crop
-from extract_util import run_trocr, detect_language_auto, detect_text_type_auto
-from translation_model import translate_text
+from extract_util import run_trocr, detect_img_language_auto, detect_text_type_auto
+from translation_model import translate_text, detect_text_language_auto
 
 app = Flask(__name__)
 
@@ -114,8 +114,8 @@ def status():
         if user:
             return jsonify({
                 'logged_in': True,
-                'name': user['username'],   # username
-                'email': user['email']      # <-- add email here
+                'name': user['username'],
+                'email': user['email']
             }), 200
 
     return jsonify({'logged_in': False}), 200
@@ -145,7 +145,7 @@ def detect_extract():
     crop_paths = detect_and_crop(path, out_dir=CROP_DIR)
 
     if input_language == "auto":
-        input_language = detect_language_auto(crop_paths)
+        input_language = detect_img_language_auto(crop_paths)
     if text_type == "auto":
         text_type = detect_text_type_auto(crop_paths)
 
@@ -197,49 +197,45 @@ def detect_extract():
 @jwt_required(optional=True)
 def translate():
     data = request.get_json()
-
     if not data:
         return jsonify({"error": "No JSON payload provided"}), 400
 
     text = data.get("text", "")
-    src_lang = data.get("input_language", "en")
-    tgt_lang = data.get("language", None)  # zh, fr, de, es, it, ru ...
-
-    if not text.strip():
-        return jsonify({"error": "Text cannot be empty"}), 400
+    src_lang = data.get("input_language", "auto")
+    tgt_lang = data.get("language", None)
 
     if not tgt_lang:
         return jsonify({"error": "tgt_lang is required"}), 400
-
-    if(src_lang == tgt_lang):
-        return jsonify({
-            "translated_text": text
-        })
+    if src_lang == "auto":
+        src_lang = detect_text_language_auto(text)
+    if src_lang in ("ch_sim", "zh-cn"):
+        src_lang = "zh"
 
     try:
-        print(f"text:{text},src_lang:{src_lang},tgt_lang:{tgt_lang}")
         translated = translate_text(text, src_lang, tgt_lang)
-
-        # Save translation history into SQLite for authenticated users
-        current_user_id = get_jwt_identity()
-        if current_user_id:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO translate_history (user_id, timestamp, input_text, translated_text, input_language, output_language)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (current_user_id, datetime.now().isoformat(), text, translated, src_lang, tgt_lang))
-            conn.commit()
-            conn.close()
-
-        return jsonify({
-            "input_text": text,
-            "translated_text": translated,
-            "detected_language": src_lang
-        })
-
     except Exception as e:
         return jsonify({"error": f"Translation failed: {str(e)}"}), 500
+
+    if src_lang == "zh":
+        src_lang = "ch_sim"
+
+    # Save translation history into SQLite for authenticated users
+    current_user_id = get_jwt_identity()
+    if current_user_id:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO translate_history (user_id, timestamp, input_text, translated_text, input_language, output_language)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (current_user_id, datetime.now().isoformat(), text, translated, src_lang, tgt_lang))
+        conn.commit()
+        conn.close()
+
+    return jsonify({
+        "input_text": text,
+        "translated_text": translated,
+        "detected_language": src_lang
+    })
 
 
 @app.route('/api/extract_history', methods=['GET'])

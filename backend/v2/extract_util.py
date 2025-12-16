@@ -35,9 +35,9 @@ def run_trocr(image_path):
 #     'uz', 'kk', 'ky', 'tg', 'tk', 'af', 'eu', 'ca', 'gl', 'la', 'oc', 'mi', 'id',
 #     'ms', 'tl', 'jv', 'su'
 # ]
-EASYOCR_SUPPORTED_LANGS = ['en', 'fr', 'ch_sim', 'ru', 'be']
+EASYOCR_SUPPORTED_LANGS = ['en', 'ch_sim', 'ru']
 
-def detect_language_auto(crop_path):
+def detect_img_language_auto(crop_path):
     """
     Traverse all EasyOCR supported languages to determine the highest-scoring language for the text in crop_path[0].
     """

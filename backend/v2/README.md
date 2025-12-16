@@ -3,7 +3,7 @@
 ## Features
 
 -   Text Detection: Uses CRAFT (Character Region Awareness for Text detection) to detect text regions and crop image patches for OCR processing.
--   Text Extraction: Uses TrOCR and EasyOCR engines to extract text from detected regions. Automatically selects the best OCR result based on accuracy metrics or predefined rules.
+-   Text Extraction: Uses TrOCR and EasyOCR engines to extract text from detected regions. Selects the best OCR result based on text type.
 -   Evaluation Metrics: Measures performance using Word Error Rate (WER) and Character Error Rate (CER).
 -   Text Translation: Translates extracted text to the user-selected target language using Helsinki-NLP MarianMTModel.
 -   User Authentication: Provides JWT-based signup and login with Bcrypt password hashing for enhanced security.
@@ -28,7 +28,11 @@
 python3.10 -m venv .venv
 
 # Activate virtual environment
+# For macOS/Linux:
 source .venv/bin/activate
+
+# For Windows:
+.\.venv\Scripts\activate
 
 # Upgrade pip
 pip install --upgrade pip
@@ -271,7 +275,8 @@ or
 ```json
 {
     "logged_in": true,
-    "name": "..."
+    "name": "...",
+    "email": "..."
 }
 ```
 
@@ -280,5 +285,89 @@ or
 ```json
 {
     "logged_in": false
+}
+```
+
+### 7. Get Extract History
+
+**Endpoint:** `GET /api/extract_history`
+
+**Request:**
+
+-   Headers:
+    -   `Authorization: Bearer <your_jwt_token>`
+
+**Response:**
+
+-   Success (200):
+
+```json
+[
+    {
+        "timestamp": "2025-12-15T10:00:00",
+        "image_url": "/api/image/2025-12-15T10:00:00",
+        "extracted_text": "...",
+        "text_type": "printed",
+        "language": "en"
+    }
+]
+```
+
+### 8. Get Translate History
+
+**Endpoint:** `GET /api/translate_history`
+
+**Request:**
+
+-   Headers:
+    -   `Authorization: Bearer <your_jwt_token>`
+
+**Response:**
+
+-   Success (200):
+
+```json
+[
+    {
+        "timestamp": "2025-12-15T10:00:00",
+        "input_text": "Hello world",
+        "translated_text": "你好世界",
+        "input_language": "en",
+        "output_language": "zh"
+    }
+]
+```
+
+### 9. Get Extracted Image
+
+**Endpoint:** `GET /api/image/<timestamp>`
+
+**Request:**
+
+-   Headers:
+    -   `Authorization: Bearer <your_jwt_token>`
+-   URL Parameters:
+    -   `timestamp`: (e.g., `2025-12-15T10:00:00`)
+
+**Response:**
+
+-   Success (200):
+
+    -   Returns the image file in WebP format
+    -   Content-Type: `image/webp`
+
+-   Error (404):
+
+```json
+{
+    "error": "Image not found"
+}
+```
+
+-   Error (401):
+
+```json
+{
+    "error": "Unauthorized"
 }
 ```
