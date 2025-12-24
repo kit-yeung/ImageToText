@@ -152,6 +152,9 @@ def detect_and_crop(input_image_path, out_dir="crops", min_area=100):
         return []
 
     boxes = prediction.get("boxes", [])
+    if not boxes:
+        return []
+    
     # Line grouping + sorting
     boxes = sort_into_lines(boxes)
     crop_paths = []

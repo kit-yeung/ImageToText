@@ -143,6 +143,12 @@ def detect_extract():
 
     # Detect + Crop
     crop_paths = detect_and_crop(path, out_dir=CROP_DIR)
+    if not crop_paths:
+        return jsonify({
+            "extracted_text": "",
+            "text_type": text_type,
+            "detected_language": input_language
+        })
 
     if input_language == "auto":
         input_language = detect_img_language_auto(crop_paths)
